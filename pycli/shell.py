@@ -6,22 +6,18 @@ class Shell(ABC):
 
     def run(self):
         parser = argparse.ArgumentParser()
-        parser.add_argument("command")
-        parser.add_argument("--verbose", help="increase output verbosity",
-                            action="store_true")
+        parser.add_argument("command", help="select one of the different commands ", choices=[c.name for c in self.get_commands()])
+        parser.add_argument("subcommand", nargs='?', help="specify a subcommand")
         args = parser.parse_args()
-        command = self.get_command(args.command)
+        command = next(iter([c for c in self.get_commands() if c.name == args.command]), None)
 
         if command:
             command.run(args)
         else:
             print("{0} is not a valid command".format(args.command))
-            print(self.get_usage())
+
 
     @abstractmethod
-    def get_command(self, name):
-        return None
+    def get_commands(self):
+        return []
 
-    @abstractmethod
-    def get_usage(selfe):
-        return "This is usage info..."

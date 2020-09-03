@@ -38,7 +38,7 @@ Usage example:
             return [Auth()]
     
     def main():
-        Realnet().run()
+        Myapp().run()
     
     
     if __name__ == "__main__":

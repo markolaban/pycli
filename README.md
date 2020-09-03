@@ -1,10 +1,10 @@
-# pycli
+# pynecone
 
 A library to make writing cli applications easier
 
 Usage example:
 
-    from pycli import Shell, Subshell, Command
+    from pynecone import Shell, Subshell, Command
 
     class Login(Command):
     

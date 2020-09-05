@@ -10,13 +10,13 @@ README = (HERE / "README.md").read_text()
 # This call to setup() does all the work
 setup(
     name="pynecone",
-    version="0.0.1",
+    version="0.0.2",
     description="Build your CLI with ease",
     long_description=README,
     long_description_content_type="text/markdown",
     url="https://github.com/markolaban/pynecone",
     author="Marko Laban",
-    author_email="makro.laban@l33tsystems.com",
+    author_email="marko.laban@l33tsystems.com",
     license="BSD",
     classifiers=[
         "License :: OSI Approved :: BSD License",
@@ -28,7 +28,7 @@ setup(
     install_requires=[],
     entry_points={
         "console_scripts": [
-            "pyneocne=pynecone.__main__:main",
+            "pynecone=pynecone.__main__:main",
         ]
     },
 )

@@ -12,6 +12,6 @@ class Subshell(Shell, Command, ABC):
         command = next(iter([c for c in self.get_commands() if c.name == args.subcommand]), None)
 
         if command:
-            command.run(args)
+            command.execute(self.get_commands())
         else:
             print("{0} is not a valid command".format(args.subcommand))

@@ -25,8 +25,7 @@ class MySubshell(Subshell):
         return [MyCommand()]
 
     def add_arguments(self, parser):
-        pass
-        # parser.add_argument('--bar', help='bar help')
+        parser.add_argument('--bar', help='bar help')
 
 
 
@@ -39,6 +38,6 @@ class MyShell(Shell):
         return [MySubshell()]
 
     def add_arguments(self, parser):
-        pass
+        parser.add_argument('--oof', help='oof help')
 
 MyShell().run()

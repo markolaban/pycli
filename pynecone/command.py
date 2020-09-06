@@ -29,4 +29,6 @@ class Command(ABC):
         self.add_positional_arguments(parser, commands)
         self.add_arguments(parser)
         args = parser.parse_known_args()
+        print('*** name is: ', self.name)
+        print('*** args are: ', args)
         self.run(args[0])

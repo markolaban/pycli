@@ -27,3 +27,7 @@ class Command(ABC):
         print('*** name is: ', self.name)
         print('*** args are: ', args)
         self.run(args[0])
+
+    def setup(self, subparsers):
+        parser = subparsers.add_parser(self.name, help=self.get_help())
+        self.add_arguments(parser)

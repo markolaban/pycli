@@ -7,10 +7,17 @@ import argparse
 class Shell(Command, ABC):
 
     def run(self):
-        parser = argparse.ArgumentParser(PROG=self.name, help=self.get_help())
+        parser = argparse.ArgumentParser(prog=self.name)
         self.add_arguments(parser)
+        subparsers = parser.add_subparsers(help=self.get_help())
+        for c in self.get_commands():
+            c.setup(subparsers)
         # self.add_positional_arguments(parser, self.get_commands())
-        args = parser.parse_known_args()
+        args = parser.parse_args()
+        print(args)
+
+        return
+        # parser.parse_args()
 
         command = next(iter([c for c in self.get_commands() if c.name == args[0].command]), None)
 

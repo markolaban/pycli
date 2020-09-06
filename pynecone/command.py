@@ -19,15 +19,7 @@ class Command(ABC):
     def get_help(self):
         return None
 
-    def execute(self, parser):
-        parser = argparse.ArgumentParser()
-        # self.add_positional_arguments(parser, commands)
-        self.add_arguments(parser)
-        args = parser.parse_known_args()
-        print('*** name is: ', self.name)
-        print('*** args are: ', args)
-        self.run(args[0])
-
     def setup(self, subparsers):
         parser = subparsers.add_parser(self.name, help=self.get_help())
         self.add_arguments(parser)
+        return parser

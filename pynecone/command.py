@@ -16,17 +16,12 @@ class Command(ABC):
         pass
 
     @abstractmethod
-    def get_commands(self):
-        return []
+    def get_help(self):
+        return None
 
-    def add_positional_arguments(self, parser, commands):
-        parser.add_argument("command", help="select one of the different commands ",
-                            choices=[c.name for c in commands])
-        parser.add_argument("subcommand", nargs='?', help="specify a subcommand")
-
-    def execute(self, commands):
+    def execute(self, parser):
         parser = argparse.ArgumentParser()
-        self.add_positional_arguments(parser, commands)
+        # self.add_positional_arguments(parser, commands)
         self.add_arguments(parser)
         args = parser.parse_known_args()
         print('*** name is: ', self.name)

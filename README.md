@@ -5,40 +5,46 @@ A library to make writing cli applications easier
 Usage example:
 
     from pynecone import Shell, Subshell, Command
-
-    class Login(Command):
+    
+    
+    class MyCommand(Command):
     
         def __init__(self):
-            super().__init__("login")
+            super().__init__("mycommand")
+    
+        def add_arguments(self, parser):
+            parser.add_argument('--foo', help='foo help')
     
         def run(self, args):
-            print("logging in")
+            print(args)
     
-    class Logout(Command):
-    
-        def __init__(self):
-            super().__init__("logout")
-    
-        def run(self, args):
-            print("logging out")
-    
-    
-    class Auth(Subshell):
+    class MySubshell(Subshell):
     
         def __init__(self):
-            super().__init__("auth")
+            super().__init__("mysubshell")
     
         def get_commands(self):
-            return [Login(), Logout()]
+            return [MyCommand()]
+    
+        def add_arguments(self, parser):
+            pass
     
     
-    class Myapp(Shell):
+    class MyShell(Shell):
+    
+        def __init__(self):
+            super().__init__('myshell')
     
         def get_commands(self):
-            return [Auth()]
+            return [MySubshell()]
+    
+        def add_arguments(self, parser):
+            pass
+    
+    MyShell().run()
     
     def main():
-        Myapp().run()
+        MyShell().run()
     
     
     if __name__ == "__main__":

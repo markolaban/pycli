@@ -17,7 +17,7 @@ class Shell(Command, ABC):
                 c.setup(subparsers)
             args = parser.parse_args()
 
-        print(args)
+        # print(args)
 
         if args.command:
             command = next(iter([c for c in self.get_commands() if c.name == args.command]), None)

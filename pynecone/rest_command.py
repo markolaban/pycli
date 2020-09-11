@@ -10,7 +10,10 @@ class RESTCommand(Command):
         return self.execute(args, Client(self.get_config().get_api_base_url(), self.get_token(), self.get_token))
 
     def get_token(self):
-        authenticator = Authenticator(self.get_config().get_client_id(), self.get_config().get_callback_url(), self.get_config().get_auth_url())
+        authenticator = Authenticator(self.get_config().get_client_id(),
+                                      self.get_config().get_callback_url(),
+                                      self.get_config().get_auth_url(),
+                                      self.get_config().get_token_url())
 
         client_key = self.get_config().get_client_key()
         client_secret = self.get_config().get_client_secret()

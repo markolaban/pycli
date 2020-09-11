@@ -10,6 +10,7 @@ class RESTCommand(Command):
         return self.execute(args, Client(self.get_config().get_api_base_url(),
                                          self.get_token(),
                                          self.get_token,
+                                         self.get_config().get_debug(),
                                          self.get_config().get_client_cert(),
                                          self.get_config().get_client_cert_key(),
                                          self.get_config().get_ca_bundle()))

@@ -15,7 +15,7 @@ class RESTCommand(Command):
                                          self.get_config().get_client_cert_key(),
                                          self.get_config().get_ca_bundle()))
 
-    def get_token(self):
+    def get_token(self, force=False):
         authenticator = Authenticator(self.get_config().get_client_id(),
                                       self.get_config().get_callback_url(),
                                       self.get_config().get_auth_url(),
@@ -30,7 +30,7 @@ class RESTCommand(Command):
         if client_key is not None and client_secret is not None:
             token = authenticator.get_api_token(client_key, client_secret)
         elif client_cert is None or client_cert_key is None:
-            token = authenticator.retrieve_token()
+            token = authenticator.retrieve_token(force)
 
         return token
 

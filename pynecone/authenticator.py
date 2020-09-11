@@ -68,14 +68,17 @@ class Authenticator:
                     keyring.delete_password(self.client_id, "access_token_{0}".format(index))
             keyring.delete_password(self.client_id, "access_token_count")
 
-    def retrieve_token(self):
-        count = keyring.get_password(self.client_id, "access_token_count")
-        access_token = ''
-        if count:
-            for index in range(0, int(count) + 1):
-                access_token += keyring.get_password(self.client_id, "access_token_{0}".format(index))
-        else:
+    def retrieve_token(self, force=False):
+        if force:
             access_token = self.login()
+        else:
+            count = keyring.get_password(self.client_id, "access_token_count")
+            access_token = ''
+            if count:
+                for index in range(0, int(count) + 1):
+                    access_token += keyring.get_password(self.client_id, "access_token_{0}".format(index))
+            else:
+                access_token = self.login()
         return access_token
 
     @classmethod

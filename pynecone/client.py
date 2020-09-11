@@ -59,7 +59,7 @@ class Client:
             else:
                 return resp.content
         elif resp.status_code == 401:
-            self.token = self.get_token()
+            self.token = self.get_token(True)
             return self.get(path, params)
         else:
             if not self.debug:
@@ -76,7 +76,7 @@ class Client:
         if resp.status_code == requests.codes.ok:
             return resp.json()
         elif resp.status_code == 401:
-            self.token = self.get_token()
+            self.token = self.get_token(True)
             return self.post(path, params)
         else:
             if not self.debug:
@@ -93,7 +93,7 @@ class Client:
         if resp.status_code == requests.codes.ok:
             return resp.json()
         elif resp.status_code == 401:
-            self.token = self.get_token()
+            self.token = self.get_token(True)
             return self.put(path, params)
         else:
             print(resp.status_code, resp.text)
@@ -111,7 +111,7 @@ class Client:
         if resp.status_code == requests.codes.ok:
             return resp.status_code
         elif resp.status_code == 401:
-            self.token = self.get_token()
+            self.token = self.get_token(True)
             return self.put_file(path, file)
         else:
             print(resp.status_code, resp.text)
@@ -130,7 +130,7 @@ class Client:
         if resp.status_code == requests.codes.ok:
             return resp.json()
         elif resp.status_code == 401:
-            self.token = self.get_token()
+            self.token = self.get_token(True)
             return self.delete(path, id)
         else:
             if not self.debug:

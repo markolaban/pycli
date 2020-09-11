@@ -7,13 +7,13 @@ from .client import Client
 class RESTCommand(Command):
 
     def run(self, args):
-        return self.execute(args, Client(self.get_api_base_url(), self.get_token(), self.get_token))
+        return self.execute(args, Client(self.get_config().get_api_base_url(), self.get_config().get_token(), self.get_config().get_token))
 
     def get_token(self):
-        authenticator = Authenticator(self.get_client_id(), self.get_callback_url(), self.get_auth_url())
+        authenticator = Authenticator(self.get_config().get_client_id(), self.get_config().get_callback_url(), self.get_config().get_auth_url())
 
-        client_key = self.get_client_key()
-        client_secret = self.get_client_secret()
+        client_key = self.get_config().get_client_key()
+        client_secret = self.get_config().get_client_secret()
 
         if client_key is not None and client_secret is not None:
             token = authenticator.get_api_token(client_key, client_secret)
@@ -27,25 +27,6 @@ class RESTCommand(Command):
         pass
 
     @abstractmethod
-    def get_client_id(self):
+    def get_config(self):
         pass
 
-    @abstractmethod
-    def get_client_key(self):
-        pass
-
-    @abstractmethod
-    def get_client_secret(self):
-        pass
-
-    @abstractmethod
-    def get_callback_url(self):
-        pass
-
-    @abstractmethod
-    def get_auth_url(self):
-        pass
-
-    @abstractmethod
-    def get_api_base_url(self):
-        pass

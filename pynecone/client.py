@@ -22,6 +22,8 @@ class Client:
         self.client_cert = client_cert
         self.client_cert_key = client_cert_key
         self.ca_bundle = ca_bundle
+        if self.debug:
+            print('debug: on')
 
     def get_endpoint_url(self, path):
         return urljoin(self.api_base_url, path)

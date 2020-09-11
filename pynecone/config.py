@@ -1,6 +1,6 @@
 class Config:
 
-    def __init__(self,  api_base_url, auth_url, callback_url, client_id, client_key, client_secret, token_url):
+    def __init__(self,  api_base_url, auth_url, callback_url, client_id, client_key, client_secret, token_url, debug=False):
         self.api_base_url = api_base_url
         self.auth_url = auth_url
         self.callback_url = callback_url
@@ -8,6 +8,7 @@ class Config:
         self.client_key = client_key
         self.client_secret = client_secret
         self.token_url = token_url
+        self.debug = debug;
 
     def get_client_id(self):
         return self.client_id
@@ -29,3 +30,6 @@ class Config:
 
     def get_token_url(self):
         return self.token_url
+
+    def get_debug(self):
+        return self.debug

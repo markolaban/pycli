@@ -5,5 +5,5 @@ from .client import *
 from .rest_command import *
 from .config import *
 
-__version__ = "0.0.9"
+__version__ = "0.0.10"
 

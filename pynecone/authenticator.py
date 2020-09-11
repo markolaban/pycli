@@ -31,11 +31,12 @@ class HTTPServerHandler(BaseHTTPRequestHandler):
 
 class Authenticator:
 
-    def __init__(self, client_id, callback_url, auth_url, token_url):
+    def __init__(self, client_id, callback_url, auth_url, token_url, debug=False):
         self.client_id = client_id
         self.callback_url = callback_url
         self.auth_url = auth_url
         self.token_url = token_url
+        self.debug = debug
 
     def login(self):
         httpServer = HTTPServer(('localhost', 8080),
@@ -92,8 +93,10 @@ class Authenticator:
                                         'client_id': self.client_id,
                                         'redirect_uri': self.callback_url}, verify=False)
 
-        # data = dump.dump_all(resp)
-        # print(data.decode('utf-8'))
+        if self.debug:
+            data = dump.dump_all(resp)
+            print(data.decode('utf-8'))
+
         return resp.json()['access_token']
 
 

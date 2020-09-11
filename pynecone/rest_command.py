@@ -13,7 +13,8 @@ class RESTCommand(Command):
         authenticator = Authenticator(self.get_config().get_client_id(),
                                       self.get_config().get_callback_url(),
                                       self.get_config().get_auth_url(),
-                                      self.get_config().get_token_url())
+                                      self.get_config().get_token_url(),
+                                      self.get_config().get_debug())
 
         client_key = self.get_config().get_client_key()
         client_secret = self.get_config().get_client_secret()

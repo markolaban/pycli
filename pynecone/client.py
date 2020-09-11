@@ -6,21 +6,50 @@ from urllib.parse import urljoin
 
 class Client:
 
-    def __init__(self, api_base_url, token, get_token):
+    def __init__(self,
+                 api_base_url,
+                 token,
+                 get_token,
+                 debug=False,
+                 client_cert=None,
+                 client_cert_key=None,
+                 ca_bundle=None):
+
         self.api_base_url = api_base_url
         self.token = token
         self.get_token = get_token
-        print(self.token)
+        self.debug = debug
+        self.client_cert = client_cert
+        self.client_cert_key = client_cert_key
+        self.ca_bundle = ca_bundle
 
     def get_endpoint_url(self, path):
         return urljoin(self.api_base_url, path)
 
-    def get(self, path, params=None):
-        headers = {}
-        if self.token:
-            headers = {"Authorization": "Bearer " + self.token}
+    def get_arguments(self):
+        arguments = {}
 
-        resp = requests.get(self.get_endpoint_url(path), headers=headers, params=params)
+        if self.token:
+            arguments['headers'] = {"Authorization": "Bearer " + self.token}
+
+        if self.ca_bundle:
+            arguments['verify'] = self.ca_bundle
+
+        if self.client_cert is not None and self.client_cert_key is not None:
+            arguments['cert'] = (self.client_cert, self.client_cert_key)
+
+        return arguments
+
+    def dump(self, response):
+        data = dump.dump_all(response)
+        print(data.decode('utf-8'))
+
+    def get(self, path, params=None):
+
+        resp = requests.get(self.get_endpoint_url(path),  params=params, **self.get_arguments())
+
+        if self.debug:
+            self.dump(resp)
 
         if resp.status_code == requests.codes.ok:
             if resp.headers.get('content-type').startswith('application/json'):
@@ -31,17 +60,16 @@ class Client:
             self.token = self.get_token()
             return self.get(path, params)
         else:
-            data = dump.dump_all(resp)
-            print(data.decode('utf-8'))
+            if not self.debug:
+                self.dump(resp)
             return None
 
     def post(self, path, params):
-        token = self.token
-        headers = {}
-        if token:
-            headers = {"Authorization": "Bearer " + token}
 
-        resp = requests.post(self.get_endpoint_url(path), headers=headers, data=params)
+        resp = requests.post(self.get_endpoint_url(path), data=params, **self.get_arguments())
+
+        if self.debug:
+            self.dump(resp)
 
         if resp.status_code == requests.codes.ok:
             return resp.json()
@@ -49,17 +77,16 @@ class Client:
             self.token = self.get_token()
             return self.post(path, params)
         else:
-            data = dump.dump_all(resp)
-            print(data.decode('utf-8'))
+            if not self.debug:
+                self.dump(resp)
             return None
 
     def put(self, path, params):
-        token = self.token
-        headers = {}
-        if token:
-            headers = {"Authorization": "Bearer " + token}
 
-        resp = requests.put(self.get_endpoint_url(path), headers=headers, data=params)
+        resp = requests.put(self.get_endpoint_url(path), data=params, **self.get_arguments())
+
+        if self.debug:
+            self.dump(resp)
 
         if resp.status_code == requests.codes.ok:
             return resp.json()
@@ -68,17 +95,16 @@ class Client:
             return self.put(path, params)
         else:
             print(resp.status_code, resp.text)
-            # data = dump.dump_all(resp)
-            # print(data.decode('utf-8'))
+            if not self.debug:
+                self.dump(resp)
             return None
 
     def put_file(self, path, file):
-        token = self.token
-        headers = {}
-        if token:
-            headers = {"Authorization": "Bearer " + token}
 
-        resp = requests.put(self.get_endpoint_url(path), headers=headers, files=dict(file=file))
+        resp = requests.put(self.get_endpoint_url(path), files=dict(file=file), **self.get_arguments())
+
+        if self.debug:
+            self.dump(resp)
 
         if resp.status_code == requests.codes.ok:
             return resp.status_code
@@ -87,18 +113,17 @@ class Client:
             return self.put_file(path, file)
         else:
             print(resp.status_code, resp.text)
-            # data = dump.dump_all(resp)
-            # print(data.decode('utf-8'))
+            if not self.debug:
+                self.dump(resp)
             return None
 
     def delete(self, path, id):
         target = urljoin(path, id)
-        token = self.token
-        headers = {}
-        if token:
-            headers = {"Authorization": "Bearer " + token}
 
-        resp = requests.delete(self.get_endpoint_url(target), headers=headers)
+        resp = requests.delete(self.get_endpoint_url(target), **self.get_arguments())
+
+        if self.debug:
+            self.dump(resp)
 
         if resp.status_code == requests.codes.ok:
             return resp.json()
@@ -106,8 +131,8 @@ class Client:
             self.token = self.get_token()
             return self.delete(path, id)
         else:
-            data = dump.dump_all(resp)
-            print(data.decode('utf-8'))
+            if not self.debug:
+                self.dump(resp)
             return None
 
 

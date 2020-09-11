@@ -28,7 +28,7 @@ class Client:
 
     def get_arguments(self):
         arguments = {'headers': None, 'cookies': None,
-            'auth': None, 'timeout': None, 'allow_redirects': True, 'proxies': None,
+            'auth': None, 'timeout': 5, 'allow_redirects': True, 'proxies': None,
             'hooks': None, 'stream': None, 'verify': None, 'cert': None, 'json': None}
 
         if self.token:

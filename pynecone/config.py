@@ -52,5 +52,8 @@ class Config:
     def get_client_cert(self):
         return self.client_cert
 
+    def get_client_cert_key(self):
+        return self.client_cert_key
+
     def get_ca_bundle(self):
         return self.ca_bundle

@@ -10,7 +10,7 @@ README = (HERE / "README.md").read_text()
 # This call to setup() does all the work
 setup(
     name="pynecone",
-    version="0.0.12",
+    version="0.0.13",
     description="Build your CLI with ease",
     long_description=README,
     long_description_content_type="text/markdown",

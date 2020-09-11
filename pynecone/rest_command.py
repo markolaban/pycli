@@ -22,7 +22,7 @@ class RESTCommand(Command):
         if client_key is not None and client_secret is not None:
             token = authenticator.get_api_token(client_key, client_secret)
         else:
-            token = authenticator.login()
+            token = authenticator.retrieve_token()
 
         return token
 

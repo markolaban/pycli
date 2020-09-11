@@ -27,7 +27,9 @@ class Client:
         return urljoin(self.api_base_url, path)
 
     def get_arguments(self):
-        arguments = {}
+        arguments = {'headers': None, 'cookies': None,
+            'auth': None, 'timeout': None, 'allow_redirects': True, 'proxies': None,
+            'hooks': None, 'stream': None, 'verify': None, 'cert': None, 'json': None}
 
         if self.token:
             arguments['headers'] = {"Authorization": "Bearer " + self.token}

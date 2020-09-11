@@ -7,7 +7,7 @@ from .client import Client
 class RESTCommand(Command):
 
     def run(self, args):
-        return self.execute(args, Client(self.get_config().get_api_base_url(), self.get_config().get_token(), self.get_config().get_token))
+        return self.execute(args, Client(self.get_config().get_api_base_url(), self.get_token(), self.get_token))
 
     def get_token(self):
         authenticator = Authenticator(self.get_config().get_client_id(), self.get_config().get_callback_url(), self.get_config().get_auth_url())

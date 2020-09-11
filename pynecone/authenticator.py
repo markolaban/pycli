@@ -31,10 +31,11 @@ class HTTPServerHandler(BaseHTTPRequestHandler):
 
 class Authenticator:
 
-    def __init__(self, client_id, callback_url, auth_url):
+    def __init__(self, client_id, callback_url, auth_url, token_url):
         self.client_id = client_id
         self.callback_url = callback_url
         self.auth_url = auth_url
+        self.token_url = token_url
 
     def login(self):
         httpServer = HTTPServer(('localhost', 8080),
@@ -84,7 +85,7 @@ class Authenticator:
     def get_api_token(self, key, secret):
         print(key, secret)
 
-        resp = requests.post(self.auth_url, data={'response_type': 'token',
+        resp = requests.post(self.token_url, data={'response_type': 'token',
                                         'grant_type': 'password',
                                         'username': key,
                                         'password': secret,

@@ -2,8 +2,20 @@ from tabulate import tabulate
 import json
 
 
+class Extractor:
+    def __init__(self, name=None, func=None):
+        self.name = name
+        self.func = func
+
+    def __call__(self, item):
+        if self.func:
+            return self.func(item)
+        else:
+            return item[self.name]
+
+
 class OutputFormat:
-    def __init__(self, type='table', header=['NAME'], rows=['name']):
+    def __init__(self, type='table', header=['NAME'], rows=[Extractor('name')]):
         self.type = type
         self.header = header
         self.rows = rows
@@ -20,7 +32,7 @@ class Output:
 
     @classmethod
     def extract_rows(cls, items, output_format):
-        return [[i[r] for r in output_format.rows] for i in items]
+        return [[r(i) for r in output_format.rows] for i in items]
 
     @classmethod
     def format_items(cls, items, output_format):

@@ -19,18 +19,18 @@ class Output:
             return cls.format_item(output, output_format)
 
     @classmethod
-    def extract_rows(cls, items, output_format=OutputFormat()):
+    def extract_rows(cls, items, output_format):
         return [[i[r] for r in output_format.rows] for i in items]
 
     @classmethod
-    def format_items(cls, items, output_format=OutputFormat()):
+    def format_items(cls, items, output_format):
         if output_format.type == 'json':
             return json.dumps(items)
         else:
             return tabulate(cls.extract_rows(items, output_format), output_format.header)
 
     @classmethod
-    def format_item(cls, item, output_format=OutputFormat()):
+    def format_item(cls, item, output_format):
         if output_format.type == 'json':
             return json.dumps(item)
         else:

@@ -6,5 +6,5 @@ from .rest_command import *
 from .config import *
 from .output import *
 
-__version__ = "0.0.20"
+__version__ = "0.0.21"
 

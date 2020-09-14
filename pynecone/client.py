@@ -23,7 +23,7 @@ class Client:
         self.client_cert_key = client_cert_key
         self.ca_bundle = ca_bundle
         if self.debug:
-            print('debug: on')
+            print('debug: ', self.debug)
 
     def get_endpoint_url(self, path):
         return urljoin(self.api_base_url, path)
@@ -36,7 +36,7 @@ class Client:
         if self.token:
             arguments['headers'] = {"Authorization": "Bearer " + self.token}
 
-        if self.ca_bundle:
+        if self.ca_bundle is not None:
             arguments['verify'] = self.ca_bundle
 
         if self.client_cert is not None and self.client_cert_key is not None:

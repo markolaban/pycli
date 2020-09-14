@@ -10,7 +10,7 @@ README = (HERE / "README.md").read_text()
 # This call to setup() does all the work
 setup(
     name="pynecone",
-    version="0.0.19",
+    version="0.0.20",
     description="Build your CLI with ease",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -25,7 +25,7 @@ setup(
     ],
     packages=find_packages(exclude=("tests",)),
     include_package_data=True,
-    install_requires=["requests_toolbelt", "requests", "keyring"],
+    install_requires=["requests_toolbelt", "requests", "keyring", "tabulate"],
     entry_points={
         "console_scripts": [
             "pynecone=pynecone.__main__:main",

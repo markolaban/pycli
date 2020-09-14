@@ -13,7 +13,8 @@ class Client:
                  debug=False,
                  client_cert=None,
                  client_cert_key=None,
-                 ca_bundle=None):
+                 ca_bundle=None,
+                 timeout=10):
 
         self.api_base_url = api_base_url
         self.token = token
@@ -22,6 +23,7 @@ class Client:
         self.client_cert = client_cert
         self.client_cert_key = client_cert_key
         self.ca_bundle = ca_bundle
+        self.timeout = timeout
         if self.debug:
             print('debug: ', self.debug)
 
@@ -30,7 +32,7 @@ class Client:
 
     def get_arguments(self):
         arguments = {'headers': None, 'cookies': None,
-            'auth': None, 'timeout': 5, 'allow_redirects': True, 'proxies': None,
+            'auth': None, 'timeout': self.timeout, 'allow_redirects': True, 'proxies': None,
             'hooks': None, 'stream': None, 'verify': None, 'cert': None, 'json': None}
 
         if self.token:

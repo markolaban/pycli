@@ -1,63 +1,57 @@
-import importlib.util
+from abc import abstractmethod
+import os
 import pika
 from .command import Command
 
 class AMQPCommand(Command):
 
-    def __init__(self,
-                 script_path,
-                 function_name,
-                 amqp_client_key,
-                 amqp_client_secret,
-                 amqp_host,
-                 amqp_port,
-                 amqp_path,
-                 amqp_queue_name,
-                 debug=False,
-                 client_cert=None,
-                 client_cert_key=None,
-                 ca_bundle=None,
-                 timeout=10):
-
-        self.script_path = script_path
-        self.function_name = function_name
-        self.amqp_client_key = amqp_client_key
-        self.amqp_client_secret = amqp_client_secret
-        self.amqp_host = amqp_host
-        self.amqp_port = amqp_port
-        self.amqp_path = amqp_path
-        self.amqp_queue_name = amqp_queue_name
-        self.debug = debug
-        self.client_cert = client_cert
-        self.client_cert_key = client_cert_key
-        self.ca_bundle = ca_bundle
-        self.timeout = timeout
-
-    def get_handler(self, args, file, callback):
-        spec = importlib.util.spec_from_file_location('testmod', file)
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
-
-        def handler(ch, method, properties, body):
-            getattr(module, callback)({'args': args,
-                                       'amqp': {'channel': ch,
-                                                 'method': method,
-                                                 'properties': properties,
-                                                 'body': body}})
-
-        return handler
-
     def add_arguments(self, parser):
-        pass
+        parser.add_argument('--amqp_client_key',
+                            help="AMQP client key, will be read from AMQP_CLIENT_KEY environment variable by default",
+                            default=os.getenv('AMQP_CLIENT_KEY'))
+        parser.add_argument('--amqp_client_secret',
+                            help="AMQP client secret, will be read from AMQP_CLIENT_SECRET environment variable by default",
+                            default=os.getenv('AMQP_CLIENT_SECRET'))
+        parser.add_argument('--amqp_host',
+                            help="AMQP host, will be read from AMQP_HOST environment variable by default",
+                            default=os.getenv('AMQP_HOST'))
+        parser.add_argument('--amqp_port',
+                            help="AMQP port, will be read from AMQP_PORT environment variable by default",
+                            default=os.getenv('AMQP_PORT', 5742))
+        parser.add_argument('--amqp_path',
+                            help="AMQP path, will be read from AMQP_HOST environment variable by default",
+                            default=os.getenv('AMQP_PATH', '/'))
+        parser.add_argument('--amqp_queue_name',
+                            help="AMQP queue name, will be read from AMQP_QUEUE_NAME environment variable by default",
+                            default=os.getenv('AMQP_QUEUE_NAME'))
+
+        parser.add_argument('--debug', action='store_true', help="debug")
+        parser.add_argument('--listen', action='store_true', help="listen")
+
+        self.add_command_arguments(parser)
 
     def run(self, args):
-        credentials = pika.PlainCredentials(self.amqp_client_key, self.amqp_client_secret)
+        credentials = pika.PlainCredentials(args.amqp_client_key, args.amqp_client_secret)
         connection = pika.BlockingConnection(
-            pika.ConnectionParameters(self.amqp_host, self.amqp_port, self.amqp_path, credentials))
+            pika.ConnectionParameters(args.amqp_host, args.amqp_port, args.amqp_path, credentials))
         channel = connection.channel()
-        channel.basic_consume(queue=self.amqp_queue_name, on_message_callback=self.get_handler(args, self.script_path, self.function_name))
+
+        if args.listen:
+            self.listen(args, channel)
+        else:
+            self.execute(args, channel)
+
+    def listen(self, args, channel):
+        channel.basic_consume(queue=args.amqp_queue_name,
+                              on_message_callback=self.execute(args, channel))
         channel.start_consuming()
 
-    def get_help(self):
-            pass
+    @abstractmethod
+    def execute(self, args, channel):
+        pass
+
+    @abstractmethod
+    def add_command_arguments(self, parser):
+        pass
+
 

@@ -25,7 +25,14 @@ setup(
     ],
     packages=find_packages(exclude=("tests",)),
     include_package_data=True,
-    install_requires=["requests_toolbelt", "requests", "keyring", "tabulate", "pika"],
+    install_requires=["requests_toolbelt",
+                      "requests",
+                      "keyring",
+                      "tabulate",
+                      "pika",
+                      "pykka",
+                      "SQLAlchemy",
+                      "Jinja2"],
     entry_points={
         "console_scripts": [
             "pynecone=pynecone.__main__:main",

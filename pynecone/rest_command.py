@@ -13,7 +13,8 @@ class RESTCommand(Command):
                                          self.get_config().get_debug(),
                                          self.get_config().get_client_cert(),
                                          self.get_config().get_client_cert_key(),
-                                         self.get_config().get_ca_bundle()))
+                                         self.get_config().get_ca_bundle(),
+                                         self.get_config().get_timeout()))
 
     def get_token(self, force=False):
         authenticator = Authenticator(self.get_config().get_client_id(),

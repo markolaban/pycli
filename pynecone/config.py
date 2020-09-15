@@ -11,7 +11,8 @@ class Config:
                  debug=False,
                  client_cert=None,
                  client_cert_key=None,
-                 ca_bundle=None):
+                 ca_bundle=None,
+                 timeout=10):
 
         self.api_base_url = api_base_url
         self.auth_url = auth_url
@@ -24,6 +25,7 @@ class Config:
         self.client_cert = client_cert
         self.client_cert_key = client_cert_key
         self.ca_bundle = ca_bundle
+        self.timeout = timeout
 
     def get_client_id(self):
         return self.client_id
@@ -57,3 +59,6 @@ class Config:
 
     def get_ca_bundle(self):
         return self.ca_bundle
+
+    def get_timeout(self):
+        return self.timeout

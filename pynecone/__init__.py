@@ -10,5 +10,5 @@ from .script_command import *
 from .config import *
 from .output import *
 
-__version__ = "0.0.27"
+__version__ = "0.0.28"
 

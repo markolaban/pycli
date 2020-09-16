@@ -8,7 +8,6 @@ class Client:
 
     def __init__(self,
                  api_base_url,
-                 token,
                  get_token,
                  debug=False,
                  client_cert=None,
@@ -17,7 +16,7 @@ class Client:
                  timeout=10):
 
         self.api_base_url = api_base_url
-        self.token = token
+        self.token = None
         self.get_token = get_token
         self.debug = debug
         self.client_cert = client_cert
@@ -34,6 +33,9 @@ class Client:
         arguments = {'headers': None, 'cookies': None,
             'auth': None, 'timeout': self.timeout, 'allow_redirects': True, 'proxies': None,
             'hooks': None, 'stream': None, 'verify': None, 'cert': None, 'json': None}
+
+        if self.token is None:
+            self.token = self.get_token()
 
         if self.token:
             arguments['headers'] = {"Authorization": "Bearer " + self.token}

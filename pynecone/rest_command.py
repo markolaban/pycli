@@ -2,13 +2,15 @@ from abc import abstractmethod
 from pynecone import Command
 from .authenticator import Authenticator
 from .client import Client
+from .config import Config
+
+import os
 
 
 class RESTCommand(Command):
 
     def run(self, args):
         return self.execute(args, Client(self.get_config().get_api_base_url(),
-                                         self.get_token(),
                                          self.get_token,
                                          self.get_config().get_debug(),
                                          self.get_config().get_client_cert(),
@@ -39,7 +41,15 @@ class RESTCommand(Command):
     def execute(self, args, client):
         pass
 
-    @abstractmethod
     def get_config(self):
-        pass
+        return Config(os.getenv('API_BASE_URL'),
+                      os.getenv('AUTH_URL'),
+                      os.getenv('CALLBACK_URL', 'http://localhost:8080'),
+                      os.getenv('CLIENT_ID'),
+                      os.getenv('CLIENT_KEY'),
+                      os.getenv('CLIENT_SECRET'),
+                      os.getenv('TOKEN_URL'),
+                      bool(os.getenv('DEBUG', False)),
+                      ca_bundle=os.getenv('CA_BUNDLE', False),
+                      timeout=os.getenv('TIMEOUT', 50))
 

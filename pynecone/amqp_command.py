@@ -42,6 +42,7 @@ class AMQPCommand(Command):
             self.execute(args, channel)
 
     def listen(self, args, channel):
+        channel.queue_declare(queue=args.amqp_queue_name)
         channel.basic_consume(queue=args.amqp_queue_name,
                               on_message_callback=self.execute(args, channel))
         channel.start_consuming()

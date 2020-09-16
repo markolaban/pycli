@@ -27,6 +27,7 @@ setup(
     include_package_data=True,
     install_requires=["requests_toolbelt",
                       "requests",
+                      "python-dotenv",
                       "keyring",
                       "tabulate",
                       "pika",

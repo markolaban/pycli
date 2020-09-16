@@ -2,10 +2,10 @@ from .amqp_command import AMQPCommand
 from .script_command import ScriptCommand
 
 
-class ReceiveCommand(AMQPCommand):
+class HandleCommand(AMQPCommand):
 
     def __init__(self):
-        super().__init__("receive")
+        super().__init__("handle")
 
     def execute(self, args, client):
         client['channel'].basic_consume(queue=args.amqp_queue_name,
@@ -17,4 +17,4 @@ class ReceiveCommand(AMQPCommand):
         parser.add_argument('func_name', help="name of the function in the script to be executed")
 
     def get_help(self):
-        return 'receive help'
+        return 'handle help'

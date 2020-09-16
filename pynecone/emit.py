@@ -1,7 +1,10 @@
 from .amqp_command import AMQPCommand
 
 
-class Send(AMQPCommand):
+class Emit(AMQPCommand):
+
+    def __init__(self):
+        super().__init__("emit")
 
     def execute(self, args, channel):
         channel.basic_publish(exchange='',
@@ -13,4 +16,4 @@ class Send(AMQPCommand):
         parser.add_argument('message', help="message to be sent")
 
     def get_help(self):
-        return 'send message to channel'
+        return 'emits an event'

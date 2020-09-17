@@ -24,7 +24,7 @@ setup(
         "Programming Language :: Python :: 3.7",
     ],
     packages=find_packages(exclude=("tests",)),
-    include_package_data=True,
+    package_data={'templates': ['cmd.jinja']},
     install_requires=["requests_toolbelt",
                       "requests",
                       "python-dotenv",

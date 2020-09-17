@@ -36,7 +36,7 @@ class Output:
 
     @classmethod
     def extract_properties(cls, item):
-        return [[i(0), i(1)] for i in item.items()]
+        return [[i[0], i[1]] for i in item.items()]
 
     @classmethod
     def format_items(cls, items, output_format):

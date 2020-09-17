@@ -35,6 +35,10 @@ class Output:
         return [[r(i) for r in output_format.rows] for i in items]
 
     @classmethod
+    def extract_properties(cls, item):
+        return [[i(0), i(1)] for i in item.items()]
+
+    @classmethod
     def format_items(cls, items, output_format):
         if output_format.type == 'json':
             return json.dumps(items)
@@ -46,7 +50,7 @@ class Output:
         if output_format.type == 'json':
             return json.dumps(item)
         else:
-            return tabulate(cls.extract_rows(item, output_format), output_format.header)
+            return tabulate(cls.extract_properties(item), output_format.header)
 
     @classmethod
     def output(cls, data, path=None):

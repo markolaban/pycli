@@ -1,8 +1,8 @@
 import importlib.util
-from .command import Command
+from .cmd import Cmd
 
 
-class ScriptCommand(Command):
+class Run(Cmd):
 
     def get_help(self):
         return 'run a python script'

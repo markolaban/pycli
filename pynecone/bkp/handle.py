@@ -1,15 +1,15 @@
-from .amqp_command import AMQPCommand
-from .script_command import ScriptCommand
+from .amqp import AMQP
+from .run import Run
 
 
-class HandleCommand(AMQPCommand):
+class Handle(AMQP):
 
     def __init__(self):
         super().__init__("handle")
 
     def execute(self, args, client):
         client['channel'].basic_consume(queue=args.amqp_queue_name,
-                                        on_message_callback=ScriptCommand.load_script(args.script_path, args.func_name, {'args': args, 'client': client}))
+                                        on_message_callback=Run.load_script(args.script_path, args.func_name, {'args': args, 'client': client}))
         client['channel'].start_consuming()
 
     def add_command_arguments(self, parser):

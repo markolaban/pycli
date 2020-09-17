@@ -21,7 +21,7 @@ class OutputFormat:
         self.rows = rows
 
 
-class Output:
+class Out:
 
     @classmethod
     def format(cls, output, output_format=OutputFormat()):

@@ -1,7 +1,7 @@
-from .amqp_command import AMQPCommand
+from .amqp import AMQP
 
 
-class Emit(AMQPCommand):
+class Emit(AMQP):
 
     def __init__(self):
         super().__init__("emit")

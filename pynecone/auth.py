@@ -4,7 +4,14 @@ import keyring
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qs
 from webbrowser import open_new
+import os
+from .cmd import Cmd
 
+import dotenv
+found_dotenv = dotenv.find_dotenv(usecwd=True)
+print("using .env: ", found_dotenv)
+if found_dotenv:
+    dotenv.load_dotenv(found_dotenv)
 
 class HTTPServerHandler(BaseHTTPRequestHandler):
 
@@ -29,9 +36,15 @@ class HTTPServerHandler(BaseHTTPRequestHandler):
         return
 
 
-class Authenticator:
+class Auth(Cmd):
 
-    def __init__(self, client_id, callback_url, auth_url, token_url, debug=False):
+    def __init__(self,
+                 client_id=os.getenv('CLIENT_ID'),
+                 callback_url=os.getenv('CALLBACK_URL', 'http://localhost:8080'),
+                 auth_url=os.getenv('AUTH_URL'),
+                 token_url=os.getenv('TOKEN_URL'), debug=bool(os.getenv('DEBUG', False))):
+
+        super().__init__("auth")
         self.client_id = client_id
         self.callback_url = callback_url
         self.auth_url = auth_url
@@ -102,5 +115,18 @@ class Authenticator:
 
         return resp.json()['access_token']
 
+    def add_arguments(self, parser):
+        parser.add_argument('op', choices=['login', 'logout', 'status'],
+                            help="authenticate", default='status', const='status', nargs='?')
 
+    def run(self, args):
+        if args.op == 'login':
+            self.login()
+        elif args.op == 'logout':
+            self.logout()
+        else:
+            print('Authenticated: {0}'.format(self.retrieve_token() is not None))
+
+    def get_help(self):
+        pass
 

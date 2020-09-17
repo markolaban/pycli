@@ -1,10 +1,10 @@
 from abc import abstractmethod
 import os
 import pika
-from .rest_command import RESTCommand
+from .rest import REST
 from .client import Client
 
-class AMQPCommand(RESTCommand):
+class AMQP(REST):
 
     def add_arguments(self, parser):
         parser.add_argument('--amqp_client_key',

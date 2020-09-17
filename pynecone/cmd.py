@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import argparse
 
 
-class Command(ABC):
+class Cmd(ABC):
 
     def __init__(self, name):
         self.name = name

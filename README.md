@@ -4,10 +4,10 @@ A library to make writing cli applications easier
 
     Usage example:
     
-        from pynecone import Shell, Command
+        from pynecone import Shell, Cmd
     
     
-    class MyCommand1(Command):
+    class MyCmd1(Cmd):
     
         def __init__(self):
             super().__init__("mycommand1")
@@ -24,7 +24,7 @@ A library to make writing cli applications easier
         def get_help(self):
             return 'mycommand1 help'
     
-    class MyCommand2(Command):
+    class MyCmd2(Cmd):
     
         def __init__(self):
             super().__init__("mycommand2")
@@ -51,7 +51,7 @@ A library to make writing cli applications easier
             super().__init__("mysubshell1")
     
         def get_commands(self):
-            return [MyCommand1(), MyCommand2()]
+            return [MyCmd1(), MyCmd2()]
     
         def add_arguments(self, parser):
             parser.add_argument('--bar1', help='bar1 help')
@@ -65,7 +65,7 @@ A library to make writing cli applications easier
             super().__init__("mysubshell2")
     
         def get_commands(self):
-            return [MyCommand1(), MyCommand2()]
+            return [MyCmd1(), MyCmd2()]
     
         def add_arguments(self, parser):
             parser.add_argument('--bar2', help='bar2 help')
@@ -81,7 +81,7 @@ A library to make writing cli applications easier
             super().__init__('myshell')
     
         def get_commands(self):
-            return [MyCommand1(), MyCommand2()]
+            return [MyCmd1(), MyCmd2()]
     
         def add_arguments(self, parser):
             parser.add_argument('--oof', help='oof help')

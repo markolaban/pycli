@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
-from .command import Command
+from .cmd import Cmd
 
 import argparse
 
 
-class Shell(Command, ABC):
+class Shell(Cmd, ABC):
 
     def run(self, args=None):
         if args is None:

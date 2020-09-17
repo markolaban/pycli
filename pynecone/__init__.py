@@ -1,14 +1,14 @@
-from .command import *
+from .cmd import *
 from .shell import *
-from .authenticator import *
+from .auth import *
 from .client import *
-from .rest_command import *
-from .amqp_command import *
+from .rest import *
+from .amqp import *
 from .handle import *
 from .emit import *
-from .script_command import *
-from .config import *
-from .output import *
+from .run import *
+from .cfg import *
+from .out import *
 
 __version__ = "0.0.30"
 

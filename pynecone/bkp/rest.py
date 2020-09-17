@@ -1,30 +1,41 @@
+from abc import abstractmethod
+from pynecone import Cmd
+from .auth import Auth
+from .cfg import Cfg
+
+import os
 import requests
 from requests_toolbelt.utils import dump
 
 from urllib.parse import urljoin
 
+class REST(Cmd):
 
-class Client:
+    def run(self, args):
+        return self.execute(args, self)
 
-    def __init__(self,
-                 api_base_url,
-                 get_token,
-                 debug=False,
-                 client_cert=None,
-                 client_cert_key=None,
-                 ca_bundle=None,
-                 timeout=10):
+    def get_token(self, force=False):
+        authenticator = Auth(self.get_config().get_client_id(),
+                             self.get_config().get_callback_url(),
+                             self.get_config().get_auth_url(),
+                             self.get_config().get_token_url(),
+                             self.get_config().get_debug())
 
-        self.api_base_url = api_base_url
-        self.token = None
-        self.get_token = get_token
-        self.debug = debug
-        self.client_cert = client_cert
-        self.client_cert_key = client_cert_key
-        self.ca_bundle = ca_bundle
-        self.timeout = timeout
-        if self.debug:
-            print('debug: ', self.debug)
+        client_key = self.get_config().get_client_key()
+        client_secret = self.get_config().get_client_secret()
+        client_cert = self.get_config().get_client_cert()
+        client_cert_key = self.get_config().get_client_cert_key()
+
+        if client_key is not None and client_secret is not None:
+            token = authenticator.get_api_token(client_key, client_secret)
+        elif client_cert is None or client_cert_key is None:
+            token = authenticator.retrieve_token(force)
+
+        return token
+
+    @abstractmethod
+    def execute(self, args, client):
+        pass
 
     def get_endpoint_url(self, path):
         return urljoin(self.api_base_url, path)
@@ -142,6 +153,4 @@ class Client:
             if not self.debug:
                 self.dump(resp)
             return None
-
-
 

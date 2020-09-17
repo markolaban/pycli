@@ -1,4 +1,4 @@
-class Config:
+class Cfg:
 
     def __init__(self,
                  api_base_url,
@@ -13,6 +13,29 @@ class Config:
                  client_cert_key=None,
                  ca_bundle=None,
                  timeout=10):
+
+        '''
+        os.getenv('REALNET_API_BASE_URL', 'https://api.realnet.io/v1/'),
+                      os.getenv('REALNET_AUTH_URL', 'https://auth.realnet.io/auth/realms/realnet/protocol/openid-connect/auth'),
+                      os.getenv('REALNET_CALLBACK_URL', 'http://localhost:8080'),
+                      os.getenv('REALNET_CLIENT_ID', 'realnet'),
+                      os.getenv('REALNET_CLIENT_KEY'),
+                      os.getenv('REALNET_CLIENT_SECRET'),
+                      os.getenv('REALNET_TOKEN_URL', 'https://auth.realnet.io/auth/realms/realnet/protocol/openid-connect/token'),
+                      bool(os.getenv('REALNET_DEBUG', False))
+        :param api_base_url:
+        :param auth_url:
+        :param callback_url:
+        :param client_id:
+        :param client_key:
+        :param client_secret:
+        :param token_url:
+        :param debug:
+        :param client_cert:
+        :param client_cert_key:
+        :param ca_bundle:
+        :param timeout:
+        '''
 
         self.api_base_url = api_base_url
         self.auth_url = auth_url

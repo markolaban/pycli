@@ -1,5 +1,8 @@
+from .pynecone import Pynecone
+
+
 def main():
-    print("main")
+    Pynecone().run()
 
 
 if __name__ == "__main__":

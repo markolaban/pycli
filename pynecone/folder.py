@@ -1,18 +1,30 @@
-from pynecone import Cmd
+from pynecone import Shell
+
+from .folder_list import Folder_List
+from .folder_download import Folder_Download
+from .folder_upload import Folder_Upload
+from .folder_delete import Folder_Delete
+from .folder_create import Folder_Create
+from .folder_update import Folder_Update
 
 
-class Folder(Cmd):
+class Folder(Shell):
 
         def __init__(self):
             super().__init__('folder')
 
-        def add_arguments(self, parser):
-            parser.add_argument('operation', choices=['one', 'two'],
-                                help="a choice between one and two", default='two', const='two', nargs='?')
-            parser.add_argument('--name', help="specifies the name", default="somename")
+        def get_commands(self):
+            return [
+                    Folder_List(),
+                    Folder_Download(),
+                    Folder_Upload(),
+                    Folder_Delete(),
+                    Folder_Create(),
+                    Folder_Update()
+            ]
 
-        def run(self, args):
+        def add_arguments(self, parser):
             pass
 
         def get_help(self):
-            return 'access folders'
+            return 'Folder shell'

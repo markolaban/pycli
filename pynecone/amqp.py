@@ -2,7 +2,7 @@ import pika
 from .broker import Broker
 from .consumer import Consumer
 from .producer import Producer
-from .run import Run
+from .task import Task
 
 
 class AMQPConsumer(Consumer):
@@ -21,14 +21,14 @@ class AMQPConsumer(Consumer):
                               on_message_callback=self.callback(args))
         channel.start_consuming()
 
-    @staticmethod
+    @classmethod
     def callback(cls, args):
-        return lambda channel, method, properties, body: Run.get_handler(args.script,
-                                                                         args.method)({'channel': channel,
-                                                                                       'method': method,
-                                                                                       'properties': properties,
-                                                                                       'body': body,
-                                                                                       'args': args})
+        return lambda channel, method, properties, body: Task.get_handler(args.script,
+                                                                          args.method)({'channel': channel,
+                                                                                        'method': method,
+                                                                                        'properties': properties,
+                                                                                        'body': body,
+                                                                                        'args': args})
 
 
 class AMQPProducer(Producer):

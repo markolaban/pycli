@@ -11,8 +11,8 @@ class Task(Cmd):
         return 'run a program'
 
     def add_arguments(self, parser):
-        parser.add_argument('--path', help="path to the script to be executed")
-        parser.add_argument('--func', help="lambda function to be executed")
+        parser.add_argument('--path', help="path to the python script to be executed")
+        parser.add_argument('--func', help="python expression to be evaluated")
         parser.add_argument('--method', help="name of the function in the script to be executed")
         parser.add_argument('--names', help="names of function arguments in order of apearance", nargs='+')
         parser.add_argument('--args', help="values of function arguments in order of apearance", nargs='+')

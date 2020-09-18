@@ -39,10 +39,19 @@ class Cfg:
         :param client_key:
         :param client_secret:
         :param token_url:
-        :param debug:
         :param client_cert:
         :param client_cert_key:
         :param ca_bundle:
+        :param basic_username:
+        :param basic_password:
+        :param amqp_client_key:
+        :param amqp_client_secret:
+        :param amqp_host:
+        :param amqp_port:
+        :param amqp_path:
+        :param amqp_queue_name:
+        :param basic_use_digest:
+        :param debug:
         :param timeout:
         '''
 

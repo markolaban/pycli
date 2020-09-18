@@ -1,18 +1,26 @@
-from pynecone import Cmd
+from pynecone import Shell
+
+from .job_list import Job_List
+from .job_delete import Job_Delete
+from .job_schedule import Job_Schedule
+from .job_update import Job_Update
 
 
-class Job(Cmd):
+class Job(Shell):
 
         def __init__(self):
             super().__init__('job')
 
-        def add_arguments(self, parser):
-            parser.add_argument('op', choices=['one', 'two'],
-                                help="a choice between one and two", default='two', const='two', nargs='?')
-            parser.add_argument('--name', help="specifies the name", default="somename")
+        def get_commands(self):
+            return [
+                    Job_List(),
+                    Job_Delete(),
+                    Job_Schedule(),
+                    Job_Update()
+            ]
 
-        def run(self, args):
+        def add_arguments(self, parser):
             pass
 
         def get_help(self):
-            return 'help'
+            return 'Job shell'

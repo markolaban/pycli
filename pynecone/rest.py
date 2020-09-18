@@ -26,14 +26,14 @@ class REST(Cmd):
 
     def get_arguments(self):
         arguments = {'headers': None, 'cookies': None,
-            'auth': None, 'timeout': self.timeout, 'allow_redirects': True, 'proxies': None,
+            'auth': None, 'timeout': self.get_config().get_timeout(), 'allow_redirects': True, 'proxies': None,
             'hooks': None, 'stream': None, 'verify': None, 'cert': None, 'json': None}
 
         auth = Auth(self.get_config())
         mode = auth.get_mode()
-        token = auth.retrieve_token()
 
         if mode == AuthMode.CLIENT_KEY or mode == AuthMode.AUTH_URL:
+            token = auth.retrieve_token()
             arguments['headers'] = {"Authorization": "Bearer " + token}
         elif mode == AuthMode.CLIENT_CERT:
             arguments['cert'] = (auth.client_cert, auth.client_cert_key)
@@ -52,7 +52,7 @@ class REST(Cmd):
 
         resp = requests.get(self.get_endpoint_url(path),  params=params, **self.get_arguments())
 
-        if self.debug:
+        if self.get_config().get_debug():
             self.dump(resp)
 
         if resp.status_code == requests.codes.ok:
@@ -69,15 +69,16 @@ class REST(Cmd):
             else:
                 print('Unauthorized')
         else:
-            if not self.debug:
+            if not self.get_config().get_debug():
                 self.dump(resp)
             return None
 
-    def post(self, path, params):
+    def post(self, path, params=None, json=None):
+        arguments = self.get_arguments()
+        arguments['json'] = json
+        resp = requests.post(self.get_endpoint_url(path), data=params, **arguments)
 
-        resp = requests.post(self.get_endpoint_url(path), data=params, **self.get_arguments())
-
-        if self.debug:
+        if self.get_config().get_debug():
             self.dump(resp)
 
         if resp.status_code == requests.codes.ok:
@@ -91,7 +92,7 @@ class REST(Cmd):
             else:
                 print('Unauthorized')
         else:
-            if not self.debug:
+            if not self.get_config().get_debug():
                 self.dump(resp)
             return None
 
@@ -99,7 +100,7 @@ class REST(Cmd):
 
         resp = requests.put(self.get_endpoint_url(path), data=params, **self.get_arguments())
 
-        if self.debug:
+        if self.get_config().get_debug():
             self.dump(resp)
 
         if resp.status_code == requests.codes.ok:
@@ -114,7 +115,7 @@ class REST(Cmd):
                 print('Unauthorized')
         else:
             print(resp.status_code, resp.text)
-            if not self.debug:
+            if not self.get_config().get_debug():
                 self.dump(resp)
             return None
 
@@ -122,7 +123,7 @@ class REST(Cmd):
 
         resp = requests.put(self.get_endpoint_url(path), files=dict(file=file), **self.get_arguments())
 
-        if self.debug:
+        if self.get_config().get_debug():
             self.dump(resp)
 
         if resp.status_code == requests.codes.ok:
@@ -137,7 +138,7 @@ class REST(Cmd):
                 print('Unauthorized')
         else:
             print(resp.status_code, resp.text)
-            if not self.debug:
+            if not self.get_config().get_debug():
                 self.dump(resp)
             return None
 
@@ -146,7 +147,7 @@ class REST(Cmd):
 
         resp = requests.delete(self.get_endpoint_url(target), **self.get_arguments())
 
-        if self.debug:
+        if self.get_config().get_debug():
             self.dump(resp)
 
         if resp.status_code == requests.codes.ok:
@@ -160,7 +161,7 @@ class REST(Cmd):
             else:
                 print('Unauthorized')
         else:
-            if not self.debug:
+            if not self.get_config().get_debug():
                 self.dump(resp)
             return None
 

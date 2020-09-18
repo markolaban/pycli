@@ -174,5 +174,5 @@ class Auth(Cmd):
             print('Authenticated: {0}'.format(self.retrieve_token() is not None))
 
     def get_help(self):
-        pass
+        return 'access control'
 

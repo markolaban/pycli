@@ -1,61 +1,46 @@
 from abc import abstractmethod
 from pynecone import Cmd
-from .auth import Auth
+from .auth import Auth, AuthMode
 from .cfg import Cfg
 
-import os
 import requests
 from requests_toolbelt.utils import dump
 
 from urllib.parse import urljoin
+
 
 class REST(Cmd):
 
     def run(self, args):
         return self.execute(args, self)
 
-    def get_token(self, force=False):
-        authenticator = Auth(self.get_config().get_client_id(),
-                             self.get_config().get_callback_url(),
-                             self.get_config().get_auth_url(),
-                             self.get_config().get_token_url(),
-                             self.get_config().get_debug())
-
-        client_key = self.get_config().get_client_key()
-        client_secret = self.get_config().get_client_secret()
-        client_cert = self.get_config().get_client_cert()
-        client_cert_key = self.get_config().get_client_cert_key()
-
-        if client_key is not None and client_secret is not None:
-            token = authenticator.get_api_token(client_key, client_secret)
-        elif client_cert is None or client_cert_key is None:
-            token = authenticator.retrieve_token(force)
-
-        return token
-
     @abstractmethod
     def execute(self, args, client):
         pass
 
+    def get_config(self):
+        return Cfg()
+
     def get_endpoint_url(self, path):
-        return urljoin(self.api_base_url, path)
+        return urljoin(self.get_config().api_base_url, path)
 
     def get_arguments(self):
         arguments = {'headers': None, 'cookies': None,
             'auth': None, 'timeout': self.timeout, 'allow_redirects': True, 'proxies': None,
             'hooks': None, 'stream': None, 'verify': None, 'cert': None, 'json': None}
 
-        if self.token is None:
-            self.token = self.get_token()
+        auth = Auth(self.get_config())
+        mode = auth.get_mode()
+        token = auth.retrieve_token()
 
-        if self.token:
-            arguments['headers'] = {"Authorization": "Bearer " + self.token}
-
-        if self.ca_bundle is not None:
-            arguments['verify'] = self.ca_bundle
-
-        if self.client_cert is not None and self.client_cert_key is not None:
-            arguments['cert'] = (self.client_cert, self.client_cert_key)
+        if mode == AuthMode.CLIENT_KEY or mode == AuthMode.AUTH_URL:
+            arguments['headers'] = {"Authorization": "Bearer " + token}
+        elif mode == AuthMode.CLIENT_CERT:
+            arguments['cert'] = (auth.client_cert, auth.client_cert_key)
+            if auth.ca_bundle is not None:
+                arguments['verify'] = auth.ca_bundle
+        elif mode == AuthMode.BASIC:
+            arguments['auth'] = auth.get_basic_token()
 
         return arguments
 
@@ -76,8 +61,13 @@ class REST(Cmd):
             else:
                 return resp.content
         elif resp.status_code == 401:
-            self.token = self.get_token(True)
-            return self.get(path, params)
+            auth = Auth(self.get_config())
+            mode = auth.get_mode()
+            if mode == AuthMode.AUTH_URL:
+                auth.login()
+                return self.get(path, params)
+            else:
+                print('Unauthorized')
         else:
             if not self.debug:
                 self.dump(resp)
@@ -93,8 +83,13 @@ class REST(Cmd):
         if resp.status_code == requests.codes.ok:
             return resp.json()
         elif resp.status_code == 401:
-            self.token = self.get_token(True)
-            return self.post(path, params)
+            auth = Auth(self.get_config())
+            mode = auth.get_mode()
+            if mode == AuthMode.AUTH_URL:
+                auth.login()
+                return self.post(path, params)
+            else:
+                print('Unauthorized')
         else:
             if not self.debug:
                 self.dump(resp)
@@ -110,8 +105,13 @@ class REST(Cmd):
         if resp.status_code == requests.codes.ok:
             return resp.json()
         elif resp.status_code == 401:
-            self.token = self.get_token(True)
-            return self.put(path, params)
+            auth = Auth(self.get_config())
+            mode = auth.get_mode()
+            if mode == AuthMode.AUTH_URL:
+                auth.login()
+                return self.put(path, params)
+            else:
+                print('Unauthorized')
         else:
             print(resp.status_code, resp.text)
             if not self.debug:
@@ -128,8 +128,13 @@ class REST(Cmd):
         if resp.status_code == requests.codes.ok:
             return resp.status_code
         elif resp.status_code == 401:
-            self.token = self.get_token(True)
-            return self.put_file(path, file)
+            auth = Auth(self.get_config())
+            mode = auth.get_mode()
+            if mode == AuthMode.AUTH_URL:
+                auth.login()
+                return self.put_file(path, file)
+            else:
+                print('Unauthorized')
         else:
             print(resp.status_code, resp.text)
             if not self.debug:
@@ -147,8 +152,13 @@ class REST(Cmd):
         if resp.status_code == requests.codes.ok:
             return resp.json()
         elif resp.status_code == 401:
-            self.token = self.get_token(True)
-            return self.delete(path, id)
+            auth = Auth(self.get_config())
+            mode = auth.get_mode()
+            if mode == AuthMode.AUTH_URL:
+                auth.login()
+                return self.delete(path, id)
+            else:
+                print('Unauthorized')
         else:
             if not self.debug:
                 self.dump(resp)

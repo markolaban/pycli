@@ -2,16 +2,15 @@ import requests
 from requests_toolbelt.utils import dump
 import keyring
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from requests.auth import HTTPBasicAuth, HTTPDigestAuth
 from urllib.parse import parse_qs
 from webbrowser import open_new
-import os
+
+from enum import Enum
+
+from .cfg import Cfg
 from .cmd import Cmd
 
-import dotenv
-found_dotenv = dotenv.find_dotenv(usecwd=True)
-print("using .env: ", found_dotenv)
-if found_dotenv:
-    dotenv.load_dotenv(found_dotenv)
 
 class HTTPServerHandler(BaseHTTPRequestHandler):
 
@@ -36,33 +35,51 @@ class HTTPServerHandler(BaseHTTPRequestHandler):
         return
 
 
+class AuthMode(Enum):
+    CLIENT_CERT = 1
+    CLIENT_KEY = 2
+    AUTH_URL = 3
+    BASIC = 4
+
 class Auth(Cmd):
 
-    def __init__(self,
-                 client_id=os.getenv('CLIENT_ID'),
-                 callback_url=os.getenv('CALLBACK_URL', 'http://localhost:8080'),
-                 auth_url=os.getenv('AUTH_URL'),
-                 token_url=os.getenv('TOKEN_URL'), debug=bool(os.getenv('DEBUG', False))):
-
+    def __init__(self, cfg=Cfg()):
         super().__init__("auth")
-        self.client_id = client_id
-        self.callback_url = callback_url
-        self.auth_url = auth_url
-        self.token_url = token_url
-        self.debug = debug
+        self.client_id = cfg.get_client_id()
+
+        # AUTH_URL Method
+        self.callback_url = cfg.get_callback_url()
+        self.auth_url = cfg.get_auth_url()
+
+        # CLIENT_KEY Method
+        self.client_key = cfg.get_client_key()
+        self.client_secret = cfg.get_client_secret()
+        self.token_url = cfg.get_token_url()
+
+        # CLIENT_CERT Method
+        self.client_cert = cfg.get_client_cert()
+        self.client_cert_key = cfg.get_client_cert_key()
+        self.ca_bundle = cfg.get_ca_bundle()
+
+        # BASIC Method
+        self.basic_username = cfg.get_basic_username()
+        self.basic_password = cfg.get_basic_password()
+        self.basic_use_digest = cfg.get_basic_use_digest()
+
+        self.debug = cfg.get_debug()
+
+    def get_mode(self):
+        if self.client_cert and self.client_cert_key:
+            return AuthMode.CLIENT_CERT
+        elif self.client_key and self.client_cert_key:
+            return AuthMode.CLIENT_KEY
+        elif self.auth_url and self.callback_url:
+            return AuthMode.AUTH_URL
+        else:
+            return AuthMode.BASIC
 
     def login(self):
-        httpServer = HTTPServer(('localhost', 8080),
-                                lambda req, address, server: HTTPServerHandler(req, address, server))
-
-        open_new(self.auth_url + '?client_id=' + self.client_id + '&redirect_uri=' + self.callback_url + '&response_type=token')
-
-        httpServer.handle_request()
-        httpServer.handle_request()
-
-        self.store_token(httpServer.access_token)
-
-        return httpServer.access_token
+        self.store_token(self.get_token())
 
     def logout(self):
         self.store_token(None)
@@ -99,13 +116,24 @@ class Auth(Cmd):
         for index, start in enumerate(range(0, len(s), n)):
             yield (index, s[start:start + n])
 
-    def get_api_token(self, key, secret):
-        print(key, secret)
+    def get_token(self):
+        mode = self.get_mode()
+        if mode == AuthMode.CLIENT_KEY:
+            return self.get_api_token()
+        elif mode == AuthMode.AUTH_URL:
+            return self.get_auth_token()
+        elif mode == AuthMode.BASIC:
+            return self.get_basic_token()
+        else:
+            if self.debug:
+                print('using client certificate auth method')
+            return None
 
+    def get_api_token(self):
         resp = requests.post(self.token_url, data={'response_type': 'token',
                                         'grant_type': 'password',
-                                        'username': key,
-                                        'password': secret,
+                                        'username': self.client_key,
+                                        'password': self.client_secret,
                                         'client_id': self.client_id,
                                         'redirect_uri': self.callback_url}, verify=False)
 
@@ -114,6 +142,24 @@ class Auth(Cmd):
             print(data.decode('utf-8'))
 
         return resp.json()['access_token']
+
+    def get_auth_token(self):
+        httpServer = HTTPServer(tuple(self.callback_url.split(':')),
+                                lambda req, address, server: HTTPServerHandler(req, address, server))
+
+        open_new(
+            self.auth_url + '?client_id=' + self.client_id + '&redirect_uri=' + self.callback_url + '&response_type=token')
+
+        httpServer.handle_request()
+        httpServer.handle_request()
+
+        return httpServer.access_token
+
+    def get_basic_token(self):
+        if self.basic_use_digest:
+            return HTTPDigestAuth(self.basic_username, self.basic_password)
+        else:
+            return HTTPBasicAuth(self.basic_username, self.basic_password)
 
     def add_arguments(self, parser):
         parser.add_argument('op', choices=['login', 'logout', 'status'],

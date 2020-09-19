@@ -34,7 +34,8 @@ setup(
                       "pika",
                       "pykka",
                       "SQLAlchemy",
-                      "Jinja2"],
+                      "Jinja2",
+                      "pyyaml"],
     entry_points={
         "console_scripts": [
             "pynecone=pynecone.__main__:main",

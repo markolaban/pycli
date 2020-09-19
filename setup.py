@@ -35,7 +35,9 @@ setup(
                       "pykka",
                       "SQLAlchemy",
                       "Jinja2",
-                      "pyyaml"],
+                      "pyyaml",
+                      "flask",
+                      "flask-mqtt"],
     entry_points={
         "console_scripts": [
             "pynecone=pynecone.__main__:main",

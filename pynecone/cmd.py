@@ -1,18 +1,17 @@
-from abc import ABC, abstractmethod
-import argparse
+from abc import abstractmethod
+from .client import Client
 
 
-class Cmd(ABC):
+class Cmd(Client):
 
     def __init__(self, name):
         self.name = name
 
-    @abstractmethod
-    def add_arguments(self, parser):
-        pass
+    def get_client(self):
+        return self
 
     @abstractmethod
-    def run(self, args):
+    def add_arguments(self, parser):
         pass
 
     @abstractmethod
@@ -23,3 +22,8 @@ class Cmd(ABC):
         parser = subparsers.add_parser(self.name, help=self.get_help())
         self.add_arguments(parser)
         return parser
+
+    def repl(self):
+        ui = input('[{0}]'.format(self.name))
+        self.run(ui)
+        self.repl()

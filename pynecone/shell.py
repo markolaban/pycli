@@ -1,10 +1,10 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from .cmd import Cmd
 
 import argparse
 
 
-class Shell(Cmd, ABC):
+class Shell(Cmd):
 
     def run(self, args=None):
         if args is None:
@@ -45,7 +45,3 @@ class Shell(Cmd, ABC):
             subsubparsers = parser.add_subparsers(dest='subcommand')
             for c in commands:
                 c.setup(subsubparsers)
-
-
-
-

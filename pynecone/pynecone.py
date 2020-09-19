@@ -1,6 +1,7 @@
 from .shell import Shell
 from .auth import Auth
 from .gen import Gen
+from .env import Env
 from .task import Task
 from .folder import Folder
 from .server import Server
@@ -13,7 +14,7 @@ class Pynecone(Shell):
         super().__init__('pynecone')
 
     def get_commands(self):
-        return [Auth(), Gen(), Task(), Folder(), Server(), Job(), Config()]
+        return [Auth(), Gen(), Env(), Task(), Folder(), Server(), Job()]
 
     def add_arguments(self, parser):
         pass

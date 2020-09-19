@@ -4,7 +4,8 @@ from .env_list import EnvList
 from .env_create import EnvCreate
 from .env_delete import EnvDelete
 from .env_update import EnvUpdate
-from .env_activate import EnvActivate
+from .env_active import EnvActive
+from .env_show import EnvShow
 
 
 class Env(Shell):
@@ -14,15 +15,16 @@ class Env(Shell):
 
         def get_commands(self):
             return [
-                    Env_List(),
-                    Env_Create(),
-                    Env_Delete(),
-                    Env_Update(),
-                    Env_Activate()
+                    EnvList(),
+                    EnvCreate(),
+                    EnvDelete(),
+                    EnvUpdate(),
+                    EnvActive(),
+                    EnvShow()
             ]
 
         def add_arguments(self, parser):
             pass
 
         def get_help(self):
-            return 'Env shell'
+            return 'manage environments'

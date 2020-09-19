@@ -1,6 +1,7 @@
 import requests
 from requests_toolbelt.utils import dump
 import keyring
+import os
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from requests.auth import HTTPBasicAuth, HTTPDigestAuth
 from urllib.parse import parse_qs
@@ -41,9 +42,127 @@ class AuthMode(Enum):
     AUTH_URL = 3
     BASIC = 4
 
+class AuthCfg:
+
+    def __init__(self,
+                 api_base_url=os.getenv('API_BASE_URL'),
+                 auth_url=os.getenv('AUTH_URL'),
+                 callback_url=os.getenv('CALLBACK_URL', 'http://localhost:8080'),
+                 client_id=os.getenv('CLIENT_ID'),
+                 client_key=os.getenv('CLIENT_KEY'),
+                 client_secret=os.getenv('CLIENT_SECRET'),
+                 token_url=os.getenv('TOKEN_URL'),
+                 client_cert=os.getenv('CLIENT_CERT'),
+                 client_cert_key=os.getenv('CLIENT_CERT_KEY'),
+                 ca_bundle=os.getenv('CA_BUNDLE'),
+                 basic_username=os.getenv('BASIC_USERNAME'),
+                 basic_password=os.getenv('BASIC_PASSWORD'),
+                 basic_use_digest=os.getenv('BASIC_USE_DIGEST', False),
+                 debug=os.getenv('DEBUG', False),
+                 timeout=os.getenv('TIMEOUT', 10)):
+
+        '''
+        :param api_base_url:
+        :param auth_url:
+        :param callback_url:
+        :param client_id:
+        :param client_key:
+        :param client_secret:
+        :param token_url:
+        :param client_cert:
+        :param client_cert_key:
+        :param ca_bundle:
+        :param basic_username:
+        :param basic_password:
+        :param basic_use_digest:
+        :param debug:
+        :param timeout:
+        '''
+
+        self.api_base_url = api_base_url
+        self.auth_url = auth_url
+        self.callback_url = callback_url
+        self.client_id = client_id
+        self.client_key = client_key
+        self.client_secret = client_secret
+        self.token_url = token_url
+        self.basic_username = basic_username
+        self.basic_password = basic_password
+        self.basic_use_digest = basic_use_digest
+        self.client_cert = client_cert
+        self.client_cert_key = client_cert_key
+        self.ca_bundle = ca_bundle
+        self.debug = debug
+        self.timeout = timeout
+
+    def get_client_id(self):
+        return self.client_id
+
+    def get_client_key(self):
+        return self.client_key
+
+    def get_client_secret(self):
+        return self.client_secret
+
+    def get_callback_url(self):
+        return self.callback_url
+
+    def get_auth_url(self):
+        return self.auth_url
+
+    def get_api_base_url(self):
+        return self.api_base_url
+
+    def get_token_url(self):
+        return self.token_url
+
+    def get_debug(self):
+        return self.debug
+
+    def get_client_cert(self):
+        return self.client_cert
+
+    def get_client_cert_key(self):
+        return self.client_cert_key
+
+    def get_ca_bundle(self):
+        return self.ca_bundle
+
+    def get_timeout(self):
+        return self.timeout
+
+    def get_basic_username(self):
+        return self.basic_username
+
+    def get_basic_password(self):
+        return self.basic_password
+
+    def get_basic_use_digest(self):
+        return self.basic_use_digest
+
+    def to_dict(self):
+        return {
+            'api_base_url': self.get_api_base_url(),
+            'auth_url': self.get_auth_url(),
+            'callback_url': self.get_callback_url(),
+            'client_id': self.get_client_id(),
+            'client_key': self.get_client_key(),
+            'client_secret': self.get_client_secret(),
+            'token_url': self.get_token_url(),
+            'basic_username': self.get_basic_username(),
+            'basic_password': self.get_basic_password(),
+            'basic_use_digest': self.get_basic_use_digest(),
+            'client_cert': self.get_client_cert(),
+            'client_cert_key': self.get_client_cert_key(),
+            'ca_bundle': self.get_ca_bundle(),
+            'debug': self.get_debug(),
+            'timeout': self.get_timeout()
+        }
+
+
 class Auth(Cmd):
 
-    def __init__(self, cfg=Cfg()):
+    def __init__(self, cfg=AuthCfg()):
         super().__init__("auth")
         self.client_id = cfg.get_client_id()
 

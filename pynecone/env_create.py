@@ -1,18 +1,17 @@
 from pynecone import Cmd
+from .config import Config
 
-
-class Env_Create(Cmd):
+class EnvCreate(Cmd):
 
         def __init__(self):
-            super().__init__('env_create')
+            super().__init__('create')
 
         def add_arguments(self, parser):
-            parser.add_argument('op', choices=['one', 'two'],
-                                help="a choice between one and two", default='two', const='two', nargs='?')
-            parser.add_argument('--name', help="specifies the name", default="somename")
+            parser.add_argument('name', help="name of the new environment")
 
         def run(self, args):
-            pass
+            Config.init().create_environment(args.name)
+
 
         def get_help(self):
-            return 'help'
+            return 'create a new environment'

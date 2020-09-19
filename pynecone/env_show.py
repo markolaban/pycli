@@ -1,10 +1,10 @@
 from pynecone import Cmd
 
 
-class EnvActive(Cmd):
+class EnvShow(Cmd):
 
         def __init__(self):
-            super().__init__('active')
+            super().__init__('show')
 
         def add_arguments(self, parser):
             parser.add_argument('op', choices=['get', 'set'],
@@ -15,4 +15,4 @@ class EnvActive(Cmd):
             pass
 
         def get_help(self):
-            return 'manage active environment'
+            return 'show environment values'

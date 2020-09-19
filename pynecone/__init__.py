@@ -2,7 +2,7 @@ from .cmd import *
 from .shell import *
 from .auth import *
 from .cfg import *
-from .run import *
+from .task import *
 from .broker import *
 from .consumer import *
 from .producer import *

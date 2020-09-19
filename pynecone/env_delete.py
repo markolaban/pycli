@@ -1,10 +1,10 @@
 from pynecone import Cmd
 
 
-class Env_Delete(Cmd):
+class EnvDelete(Cmd):
 
         def __init__(self):
-            super().__init__('env_delete')
+            super().__init__('delete')
 
         def add_arguments(self, parser):
             parser.add_argument('op', choices=['one', 'two'],
@@ -15,4 +15,4 @@ class Env_Delete(Cmd):
             pass
 
         def get_help(self):
-            return 'help'
+            return 'delete an environment'

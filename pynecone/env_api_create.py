@@ -1,10 +1,10 @@
 from pynecone import Cmd
 
 
-class EnvUpdate(Cmd):
+class EnvApiCreate(Cmd):
 
         def __init__(self):
-            super().__init__('update')
+            super().__init__('create')
 
         def add_arguments(self, parser):
             parser.add_argument('op', choices=['one', 'two'],
@@ -15,4 +15,4 @@ class EnvUpdate(Cmd):
             pass
 
         def get_help(self):
-            return 'modify an environment'
+            return 'create an api'

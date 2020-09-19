@@ -3,9 +3,10 @@ from pynecone import Shell
 from .env_list import EnvList
 from .env_create import EnvCreate
 from .env_delete import EnvDelete
-from .env_update import EnvUpdate
 from .env_activate import EnvActivate
 from .env_show import EnvShow
+from .env_mount import EnvMount
+from .env_api import EnvApi
 
 
 class Env(Shell):
@@ -18,9 +19,10 @@ class Env(Shell):
                     EnvList(),
                     EnvCreate(),
                     EnvDelete(),
-                    EnvUpdate(),
                     EnvActivate(),
-                    EnvShow()
+                    EnvShow(),
+                    EnvMount(),
+                    EnvApi()
             ]
 
         def add_arguments(self, parser):

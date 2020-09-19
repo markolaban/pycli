@@ -9,7 +9,6 @@ from webbrowser import open_new
 
 from enum import Enum
 
-from .cfg import Cfg
 from .cmd import Cmd
 
 
@@ -41,6 +40,7 @@ class AuthMode(Enum):
     CLIENT_KEY = 2
     AUTH_URL = 3
     BASIC = 4
+
 
 class AuthCfg:
 

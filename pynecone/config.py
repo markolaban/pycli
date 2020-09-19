@@ -17,32 +17,85 @@ class Config:
             yaml.dump(self.data, file)
 
     def create_environment(self, name):
-        environments = self.data.get('environments')
-        if environments is None:
-            self.data['environments'] = []
-            environments = self.data['environments']
+        self.generate()
+
+        found = [env for env in self.data.get('environments') if env['name'] == name]
+
+        if found:
+            return None
 
         env = { 'name': name,
                 'auth': {},
                 'database': {'url': 'sqlite:///{0}'.format(os.path.join(self.path, 'pynecone.db'))},
                 'server': {'host': '0.0.0.0', 'port': '8080'}}
 
-        environments.append(env)
+        self.data['environments'].append(env)
         self.save()
+        return env
+
+    def delete_environment(self, name):
+        self.generate()
+
+        found = [env for env in self.data.get('environments') if env['name'] == name]
+
+        if found:
+            if found[0]['name'] == self.data['active_environment']:
+                print('cannot delete the active environment {0}'.format(name))
+                return None
+            else:
+                self.data['environments'] = [i for i in self.data['environments'] if i['name'] != name]
+                self.save()
+                return name
+        else:
+            return None
+
+    def set_active_environment(self, name):
+        self.generate()
+
+        found = [env for env in self.data.get('environments') if env['name'] == name]
+        if found:
+            self.data['active_environment'] = name
+            self.save()
+            return found
+        else:
+            return None
+
+    def get_active_environment(self):
+        self.generate()
+
+        return self.data['active_environment']
+
+    def list_environments(self):
+        self.generate()
+
+        return self.data['environments']
+
+    def get_environment(self, name):
+        self.generate()
+
+        found = [env for env in self.data.get('environments') if env['name'] == name]
+        if found:
+            return yaml.dump(found)
+        else:
+            return None
 
 
-    def generate(self):
-        print('*** Generating default config file ***')
+    def generate(self, force=False):
+        if self.data.get('environments') is None or force:
+            print('*** generating default config file ***')
 
-        dict_file = { 'environments': [
-            {'name': 'local',
-                'auth': {},
-                'database': {'url': 'sqlite:///{0}'.format(os.path.join(self.path, 'pynecone.db'))},
-                'server': {'host': '0.0.0.0', 'port': '8080'}}
-        ]}
+            self.data = {
+                'environments': [
+                        {
+                            'name': 'local',
+                            'auth': {},
+                            'database': {'url': 'sqlite:///{0}'.format(os.path.join(self.path, 'pynecone.db'))},
+                            'server': {'host': '0.0.0.0', 'port': '8080'}
+                        }
+                ],
+                'active_environment': 'local'}
 
-        with open(self.full_path, 'w') as file:
-            yaml.dump(dict_file, file)
+            self.save()
 
     def get_database_url(self):
         return self.data['database']['url']

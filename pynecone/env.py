@@ -4,7 +4,7 @@ from .env_list import EnvList
 from .env_create import EnvCreate
 from .env_delete import EnvDelete
 from .env_update import EnvUpdate
-from .env_active import EnvActive
+from .env_activate import EnvActivate
 from .env_show import EnvShow
 
 
@@ -19,7 +19,7 @@ class Env(Shell):
                     EnvCreate(),
                     EnvDelete(),
                     EnvUpdate(),
-                    EnvActive(),
+                    EnvActivate(),
                     EnvShow()
             ]
 

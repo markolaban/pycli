@@ -1,4 +1,5 @@
 from pynecone import Cmd
+from .config import Config
 
 
 class EnvDelete(Cmd):
@@ -7,12 +8,13 @@ class EnvDelete(Cmd):
             super().__init__('delete')
 
         def add_arguments(self, parser):
-            parser.add_argument('op', choices=['one', 'two'],
-                                help="a choice between one and two", default='two', const='two', nargs='?')
-            parser.add_argument('--name', help="specifies the name", default="somename")
+            parser.add_argument('name', help="specifies the name of the environment to be deleted")
 
         def run(self, args):
-            pass
+            if Config.init().delete_environment(args.name):
+                print('environment {0} deleted'.format(args.name))
+            else:
+                print('unable to delete environment {0}'.format(args.name))
 
         def get_help(self):
             return 'delete an environment'

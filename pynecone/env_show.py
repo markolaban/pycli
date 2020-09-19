@@ -1,4 +1,5 @@
 from pynecone import Cmd
+from .config import Config
 
 
 class EnvShow(Cmd):
@@ -7,12 +8,12 @@ class EnvShow(Cmd):
             super().__init__('show')
 
         def add_arguments(self, parser):
-            parser.add_argument('op', choices=['get', 'set'],
-                                help="get or set the active environment", default='get', const='get', nargs='?')
-            parser.add_argument('--name', help="specifies the name of the environment to be set as active")
+            parser.add_argument('name', help="specifies the name of the environment to be displayed", nargs='?')
 
         def run(self, args):
-            pass
+            cfg = Config.init()
+            name = args.name if args.name else cfg.get_active_environment()
+            print(cfg.get_environment(name))
 
         def get_help(self):
             return 'show environment values'

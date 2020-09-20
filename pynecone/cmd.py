@@ -19,7 +19,7 @@ class Cmd(Client):
     def get_help(self):
         return None
 
-    def setup(self, subparsers):
+    def setup(self, subparsers, parent=None):
         parser = subparsers.add_parser(self.name, help=self.get_help())
         self.add_arguments(parser)
         return parser

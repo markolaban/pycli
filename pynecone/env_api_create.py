@@ -2,10 +2,10 @@ from pynecone import Cmd
 from .config import Config
 
 
-class EnvApiNew(Cmd):
+class EnvApiCreate(Cmd):
 
         def __init__(self):
-            super().__init__('new')
+            super().__init__('create')
 
         def add_arguments(self, parser):
             parser.add_argument('name', help="specifies the name of the API")

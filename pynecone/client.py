@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from .config import Config
 
-
 class Client(ABC):
 
     def __init__(self):
@@ -16,7 +15,4 @@ class Client(ABC):
 
     @abstractmethod
     def get_client(self):
-        pass
-
-    def get_api(self, name=None):
         pass

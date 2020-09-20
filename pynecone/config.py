@@ -107,10 +107,78 @@ class Config:
         if [api for api in apis if api['name'] == name]:
             return None
 
-        api = {'name': name, 'url': url, 'auth': {'method': None}}
+        api = {'name': name, 'url': url, 'auth': {'method': 'NONE'}}
         apis.append(api)
         self.save()
         return api
+
+    def modify_api_auth(self, name, mode, **kwargs):
+        env = self.get_active_environment()
+
+        apis = env.get('apis')
+
+        if not apis:
+            return None
+
+        found = [api for api in apis if api['name'] == name]
+
+        if found:
+            api = found[0]
+        else:
+            return None
+
+        if mode == 'BASIC':
+            auth = {
+                'mode': 'BASIC',
+                'basic_username': kwargs['basic_username'],
+                'basic_password': kwargs['basic_password'],
+                'basic_use_digest': kwargs['basic_use_digest']
+            }
+        elif mode == 'CLIENT_CERT':
+            auth = {
+                'mode': 'CLIENT_CERT',
+                'client_cert': kwargs['client_cert'],
+                'client_cert_key': kwargs['client_cert_key'],
+                'ca_bundle': kwargs['ca_bundle']
+            }
+        elif mode == 'CLIENT_KEY':
+            auth = {
+                'mode': 'CLIENT_KEY',
+                'client_key': kwargs['client_key'],
+                'client_secret': kwargs['client_secret'],
+                'token_url': kwargs['token_url']
+            }
+        elif mode == 'AUTH_URL':
+            auth = {
+                'mode': 'AUTH_URL',
+                'callback_url': kwargs['callback_url'],
+                'auth_url': kwargs['auth_url']
+            }
+        else:
+            auth = {'mode': 'NONE'}
+
+        api['auth'] = auth
+        self.save()
+        return auth
+
+    def list_api(self):
+        env = self.get_active_environment()
+        return [api for api in env['apis']]
+
+    def get_active_api(self):
+        return [api for api in self.list_api()][0]
+
+    def get_api(self, name, yaml=False):
+        api = [api for api in self.list_api() if api['name'] == name]
+        if api:
+            return yaml.dump(api[0]) if yaml else api[0]
+        else:
+            return None
+
+    def get_active_environment_name(self):
+        self.generate()
+
+        return self.data['active_environment']
 
     def generate(self, force=False):
         if self.data.get('environments') is None or force:

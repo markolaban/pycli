@@ -9,8 +9,6 @@ from webbrowser import open_new
 
 from enum import Enum
 
-from .cmd import Cmd
-
 
 class HTTPServerHandler(BaseHTTPRequestHandler):
 
@@ -35,11 +33,12 @@ class HTTPServerHandler(BaseHTTPRequestHandler):
         return
 
 
-class AuthMode(Enum):
-    CLIENT_CERT = 1
-    CLIENT_KEY = 2
-    AUTH_URL = 3
-    BASIC = 4
+class AuthMode(str, Enum):
+    CLIENT_CERT = 'CLIENT_CERT'
+    CLIENT_KEY = 'CLIENT_KEY'
+    AUTH_URL = 'AUTH_URL'
+    BASIC = 'BASIC'
+    NONE = 'NONE'
 
 
 class AuthCfg:
@@ -160,10 +159,11 @@ class AuthCfg:
         }
 
 
-class Auth(Cmd):
+class Auth:
 
-    def __init__(self, cfg=AuthCfg()):
+    def __init__(self, auth):
         super().__init__("auth")
+        cfg = AuthCfg(auth)
         self.client_id = cfg.get_client_id()
 
         # AUTH_URL Method
@@ -294,4 +294,24 @@ class Auth(Cmd):
 
     def get_help(self):
         return 'access control'
+
+    def get_arguments(self):
+        arguments = {'headers': None, 'cookies': None,
+            'auth': None, 'timeout': self.get_config().get_timeout(), 'allow_redirects': True, 'proxies': None,
+            'hooks': None, 'stream': None, 'verify': None, 'cert': None, 'json': None}
+
+        auth = Auth(self.get_config())
+        mode = auth.get_mode()
+
+        if mode == AuthMode.CLIENT_KEY or mode == AuthMode.AUTH_URL:
+            token = auth.retrieve_token()
+            arguments['headers'] = {"Authorization": "Bearer " + token}
+        elif mode == AuthMode.CLIENT_CERT:
+            arguments['cert'] = (auth.client_cert, auth.client_cert_key)
+            if auth.ca_bundle is not None:
+                arguments['verify'] = auth.ca_bundle
+        elif mode == AuthMode.BASIC:
+            arguments['auth'] = auth.get_basic_token()
+
+        return arguments
 

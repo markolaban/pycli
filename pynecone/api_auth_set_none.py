@@ -1,4 +1,5 @@
 from pynecone import Cmd
+from .config import Config
 
 
 class ApiAuthSetNone(Cmd):
@@ -7,12 +8,15 @@ class ApiAuthSetNone(Cmd):
             super().__init__('none')
 
         def add_arguments(self, parser):
-            parser.add_argument('op', choices=['one', 'two'],
-                                help="a choice between one and two", default='two', const='two', nargs='?')
-            parser.add_argument('--name', help="specifies the name", default="somename")
+            parser.add_argument('name', help="specifies the api name")
 
         def run(self, args):
-            pass
+            res = Config.init().modify_api_auth(args.name,
+                                                'NONE')
+            if res:
+                return res
+            else:
+                print('Unable to modify authentication parameters for API {0}'.format(args.name))
 
         def get_help(self):
             return 'disable authentication'

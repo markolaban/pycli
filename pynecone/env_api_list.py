@@ -1,5 +1,5 @@
 from pynecone import Cmd
-
+from .config import Config
 
 class EnvApiList(Cmd):
 
@@ -7,12 +7,10 @@ class EnvApiList(Cmd):
             super().__init__('list')
 
         def add_arguments(self, parser):
-            parser.add_argument('op', choices=['one', 'two'],
-                                help="a choice between one and two", default='two', const='two', nargs='?')
-            parser.add_argument('--name', help="specifies the name", default="somename")
+            pass
 
         def run(self, args):
-            pass
+            print(Config.init().list_api())
 
         def get_help(self):
             return 'list apis'

@@ -19,14 +19,17 @@ class Shell(Cmd):
 
         # print(args)
 
-        if args.command:
-            command = next(iter([c for c in self.get_commands() if c.name == args.command]), None)
+        if getattr(args,'command'):
+            command = next(iter([c for c in self.get_commands() if c.name == getattr(args, 'command')]), None)
             if command:
                 if hasattr(args, 'subcommand'):
-                    subcommand = next(iter([c for c in command.get_commands() if c.name == args.subcommand]), None)
+                    subcommand = next(iter([c for c in command.get_commands() if c.name == getattr(args, 'subcommand')]), None)
                     if subcommand:
                         return subcommand.run(args)
                     else:
+                        print(args)
+                        print('command: ', command.name)
+                        print('subcommands: ', [c.name for c in command.get_commands()])
                         print("{0} is not a valid subcommand".format(args.subcommand))
                 else:
                     return command.run(args)
@@ -39,14 +42,16 @@ class Shell(Cmd):
         return []
 
     def setup(self, subparsers):
+        # print('*** running command setup for {0}'.format(self.name))
         parser = super().setup(subparsers)
         commands = self.get_commands()
         if commands:
             subsubparsers = parser.add_subparsers(dest='subcommand')
             for c in commands:
+                # print('*** running subcommand setup for {0}'.format(c.name))
                 c.setup(subsubparsers)
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, args):
 
         parser = argparse.ArgumentParser(prog=self.name)
 

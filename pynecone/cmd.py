@@ -29,7 +29,7 @@ class Cmd(Client):
         self.run(ui)
         self.repl()
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, args):
         parser = argparse.ArgumentParser(prog=self.name)
         self.add_arguments(parser)
         return self.run(parser.parse_args(args))

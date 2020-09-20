@@ -175,6 +175,9 @@ class Config:
         else:
             return None
 
+    def get_timeout(self):
+        return 20
+
     def modify_api_url(self, name, url):
         env = self.get_active_environment()
 

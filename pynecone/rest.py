@@ -1,17 +1,17 @@
 from .shell import Shell
-from .rest_get import Rest_Get
-from .rest_put import Rest_Put
-from .rest_post import Rest_Post
-from .rest_delete import Rest_Delete
+from .rest_get import RestGet
+from .rest_put import RestPut
+from .rest_post import RestPost
+from .rest_delete import RestDelete
 from .config import Config
 
 class Rest(Shell):
 
     def get_commands(self):
-        return [Rest_Get(),
-                Rest_Put(),
-                Rest_Post(),
-                Rest_Delete()]
+        return [RestGet(),
+                RestPut(),
+                RestPost(),
+                RestDelete()]
 
     def add_arguments(self, parser):
         pass

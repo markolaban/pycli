@@ -1,59 +1,53 @@
-from .cmd import Cmd
+from .rest_cmd import RestCmd
 from .auth import Auth, AuthMode
 from .config import Config
 
 import requests
-from requests_toolbelt.utils import dump
 
-from urllib.parse import urljoin
 
-class Rest_Post(Cmd):
+class RestPost(RestCmd):
 
-        def __init__(self):
-            super().__init__('post')
+    def __init__(self):
+        super().__init__('post')
+        self.cfg = Config.init()
 
-        def add_arguments(self, parser):
-            parser.add_argument('op', choices=['one', 'two'],
-                                help="a choice between one and two", default='two', const='two', nargs='?')
-            parser.add_argument('--name', help="specifies the name", default="somename")
+    def add_arguments(self, parser):
+        parser.add_argument('api', help="specifies the api to use")
+        parser.add_argument('path', help="specifies the path", default='/', const='/', nargs='?')
+        parser.add_argument('--params', help="list of key:value pairs", nargs='+')
+        parser.add_argument('--json', help="json message body")
+        parser.add_argument('--debug', action='store_true', help="enable debugging")
 
-        def run(self, args):
-            pass
+    def run(self, args):
+        print(self.post(args.api,
+                        args.path,
+                        args.debug,
+                        dict([kv.split(':') for kv in args.params]) if args.params else None,
+                        json=args.json))
 
-        def get_help(self):
-            return 'help'
+    def get_help(self):
+        return 'make a POST request on the API'
 
-        def get_endpoint_url(self, path):
-            return urljoin(self.get_config().get_api(self.name)['url'], path)
+    def post(self, api, path, debug=False, params=None, json=None):
+        arguments = self.get_arguments(api)
+        arguments['json'] = json
 
-        def dump(self, response):
-            data = dump.dump_all(response)
-            print(data.decode('utf-8'))
+        resp = requests.post(self.get_endpoint_url(api, path), data=params, **arguments)
 
-        def post(self, path, params=None, json=None):
-            arguments = self.get_arguments()
-            arguments['json'] = json
-            resp = requests.post(self.get_endpoint_url(path), data=params, **arguments)
+        if debug:
+            self.dump(resp)
 
-            if self.get_config().get_debug():
-                self.dump(resp)
-
-            if resp.status_code == requests.codes.ok:
-                return resp.json()
-            elif resp.status_code == 401:
-                auth = Auth(self.get_config())
-                mode = auth.get_mode()
-                if mode == AuthMode.AUTH_URL:
-                    auth.login()
-                    return self.post(path, params)
-                else:
-                    print('Unauthorized')
+        if resp.status_code == requests.codes.ok:
+            return resp.json()
+        elif resp.status_code == 401:
+            auth = Auth(self.get_config())
+            mode = auth.get_mode()
+            if mode == AuthMode.AUTH_URL:
+                auth.login()
+                return self.post(api, path, debug, params)
             else:
-                if not self.get_config().get_debug():
-                    self.dump(resp)
-                return None
-
-        @classmethod
-        def api(cls, name=None):
-            auth = Config.get_api(name)['auth']
-            pass
+                print('Unauthorized')
+        else:
+            if not debug:
+                self.dump(resp)
+            return None

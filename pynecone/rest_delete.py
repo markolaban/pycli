@@ -1,55 +1,45 @@
-from .cmd import Cmd
+from .rest_cmd import RestCmd
 from .auth import Auth, AuthMode
+from .config import Config
 
 import requests
-from urllib.parse import urljoin
 
-from requests_toolbelt.utils import dump
 
-from urllib.parse import urljoin
+class RestDelete(RestCmd):
 
-class Rest_Delete(Cmd):
+    def __init__(self):
+        super().__init__('delete')
+        self.cfg = Config.init()
 
-        def __init__(self):
-            super().__init__('delete')
+    def add_arguments(self, parser):
+        parser.add_argument('api', help="specifies the api to use")
+        parser.add_argument('path', help="specifies the path", default='/', const='/', nargs='?')
+        parser.add_argument('--debug', action='store_true', help="enable debugging")
 
-        def add_arguments(self, parser):
-            parser.add_argument('op', choices=['one', 'two'],
-                                help="a choice between one and two", default='two', const='two', nargs='?')
-            parser.add_argument('--name', help="specifies the name", default="somename")
+    def run(self, args):
+        print(self.delete(args.api, args.path, args.debug))
 
-        def run(self, args):
-            pass
+    def get_help(self):
+        return 'make a DELETE request to the API'
 
-        def get_help(self):
-            return 'help'
+    def delete(self, api, path, debug=False):
 
-        def get_endpoint_url(self, path):
-            return urljoin(self.get_config().get_api(self.name)['url'], path)
+        resp = requests.delete(self.get_endpoint_url(api, path), **self.get_arguments(api))
 
-        def dump(self, response):
-            data = dump.dump_all(response)
-            print(data.decode('utf-8'))
+        if debug:
+            self.dump(resp)
 
-        def delete(self, path, id):
-            target = urljoin(path, id)
-
-            resp = requests.delete(self.get_endpoint_url(target), **self.get_arguments())
-
-            if self.get_config().get_debug():
-                self.dump(resp)
-
-            if resp.status_code == requests.codes.ok:
-                return resp.json()
-            elif resp.status_code == 401:
-                auth = Auth(self.get_config())
-                mode = auth.get_mode()
-                if mode == AuthMode.AUTH_URL:
-                    auth.login()
-                    return self.delete(path, id)
-                else:
-                    print('Unauthorized')
+        if resp.status_code == requests.codes.ok:
+            return resp.json()
+        elif resp.status_code == 401:
+            auth = Auth(self.get_config())
+            mode = auth.get_mode()
+            if mode == AuthMode.AUTH_URL:
+                auth.login()
+                return self.delete(api, path, debug)
             else:
-                if not self.get_config().get_debug():
-                    self.dump(resp)
-                return None
+                print('Unauthorized')
+        else:
+            if not debug:
+                self.dump(resp)
+            return None

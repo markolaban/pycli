@@ -44,7 +44,7 @@ class AuthMode(str, Enum):
 class AuthCfg:
 
     def __init__(self,
-                 api_base_url=os.getenv('API_BASE_URL'),
+                 mode='NONE',
                  auth_url=os.getenv('AUTH_URL'),
                  callback_url=os.getenv('CALLBACK_URL', 'http://localhost:8080'),
                  client_id=os.getenv('CLIENT_ID'),
@@ -78,7 +78,7 @@ class AuthCfg:
         :param timeout:
         '''
 
-        self.api_base_url = api_base_url
+        self.mode = mode
         self.auth_url = auth_url
         self.callback_url = callback_url
         self.client_id = client_id
@@ -109,9 +109,6 @@ class AuthCfg:
     def get_auth_url(self):
         return self.auth_url
 
-    def get_api_base_url(self):
-        return self.api_base_url
-
     def get_token_url(self):
         return self.token_url
 
@@ -141,7 +138,6 @@ class AuthCfg:
 
     def to_dict(self):
         return {
-            'api_base_url': self.get_api_base_url(),
             'auth_url': self.get_auth_url(),
             'callback_url': self.get_callback_url(),
             'client_id': self.get_client_id(),
@@ -162,8 +158,8 @@ class AuthCfg:
 class Auth:
 
     def __init__(self, auth):
-        super().__init__("auth")
-        cfg = AuthCfg(auth)
+
+        cfg = AuthCfg(**auth)
         self.client_id = cfg.get_client_id()
 
         # AUTH_URL Method
@@ -295,23 +291,5 @@ class Auth:
     def get_help(self):
         return 'access control'
 
-    def get_arguments(self):
-        arguments = {'headers': None, 'cookies': None,
-            'auth': None, 'timeout': self.get_config().get_timeout(), 'allow_redirects': True, 'proxies': None,
-            'hooks': None, 'stream': None, 'verify': None, 'cert': None, 'json': None}
 
-        auth = Auth(self.get_config())
-        mode = auth.get_mode()
-
-        if mode == AuthMode.CLIENT_KEY or mode == AuthMode.AUTH_URL:
-            token = auth.retrieve_token()
-            arguments['headers'] = {"Authorization": "Bearer " + token}
-        elif mode == AuthMode.CLIENT_CERT:
-            arguments['cert'] = (auth.client_cert, auth.client_cert_key)
-            if auth.ca_bundle is not None:
-                arguments['verify'] = auth.ca_bundle
-        elif mode == AuthMode.BASIC:
-            arguments['auth'] = auth.get_basic_token()
-
-        return arguments
 

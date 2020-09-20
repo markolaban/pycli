@@ -175,6 +175,26 @@ class Config:
         else:
             return None
 
+    def modify_api_url(self, name, url):
+        env = self.get_active_environment()
+
+        apis = env.get('apis')
+
+        if not apis:
+            return None
+
+        found = [api for api in apis if api['name'] == name]
+
+        if found:
+            api = found[0]
+        else:
+            return None
+
+        api['url'] = url
+
+        self.save()
+        return api
+
     def get_active_environment_name(self):
         self.generate()
 

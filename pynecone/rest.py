@@ -19,15 +19,9 @@ class Rest(Shell):
     def __init__(self):
         super().__init__('rest')
 
-
-
     def get_help(self):
         return 'makes standard Rest calls'
 
-    @classmethod
-    def api(cls, name=None):
-        auth = Config.get_api(name)['auth']
-        pass
 
 
 

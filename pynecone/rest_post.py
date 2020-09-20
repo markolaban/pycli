@@ -2,6 +2,7 @@ from .rest_cmd import RestCmd
 from .auth import Auth, AuthMode
 from .config import Config
 
+import json
 import requests
 
 
@@ -23,14 +24,14 @@ class RestPost(RestCmd):
                         args.path,
                         args.debug,
                         dict([kv.split(':') for kv in args.params]) if args.params else None,
-                        json=args.json))
+                        json_str=args.json))
 
     def get_help(self):
         return 'make a POST request on the API'
 
-    def post(self, api, path, debug=False, params=None, json=None):
+    def post(self, api, path, debug=False, params=None, json_str=None):
         arguments = self.get_arguments(api)
-        arguments['json'] = json
+        arguments['json'] = json.loads(json_str) if json_str else None
 
         resp = requests.post(self.get_endpoint_url(api, path), data=params, **arguments)
 

@@ -3,6 +3,7 @@ from .auth import Auth, AuthMode
 from .config import Config
 
 import requests
+import json
 
 
 class RestPut(RestCmd):
@@ -23,15 +24,15 @@ class RestPut(RestCmd):
                         args.path,
                         args.debug,
                         dict([kv.split(':') for kv in args.params]) if args.params else None,
-                        json=args.json))
+                        json_str=args.json))
 
     def get_help(self):
         return 'make a PUT request to the API'
 
-    def put(self, api, path, debug=False, data=None, json=None):
+    def put(self, api, path, debug=False, data=None, json_str=None):
 
         arguments = self.get_arguments(api)
-        arguments['json'] = json
+        arguments['json'] = json.loads(json_str) if json_str else None
 
         resp = requests.put(self.get_endpoint_url(api, path), data=data, **arguments)
 

@@ -31,6 +31,7 @@ class TestShell(Shell):
     def get_help(self):
         return 'test shell'
 
+
 class TestRootShell(Shell):
 
     def __init__(self):
@@ -44,6 +45,7 @@ class TestRootShell(Shell):
 
     def get_help(self):
         return 'test root shell'
+
 
 class TestSuperRootShell(Shell):
 

@@ -1,10 +1,10 @@
 from pynecone import Cmd
 
 
-class EnvApiCreate(Cmd):
+class ApiUrl(Cmd):
 
         def __init__(self):
-            super().__init__('create')
+            super().__init__('url')
 
         def add_arguments(self, parser):
             parser.add_argument('op', choices=['one', 'two'],
@@ -15,4 +15,4 @@ class EnvApiCreate(Cmd):
             pass
 
         def get_help(self):
-            return 'create an api'
+            return 'manage api url'

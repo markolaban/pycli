@@ -1,10 +1,10 @@
 from pynecone import Cmd
 
 
-class EnvApiAuthSetSecret(Cmd):
+class ApiAuthShow(Cmd):
 
         def __init__(self):
-            super().__init__('secret')
+            super().__init__('show')
 
         def add_arguments(self, parser):
             parser.add_argument('op', choices=['one', 'two'],
@@ -15,4 +15,4 @@ class EnvApiAuthSetSecret(Cmd):
             pass
 
         def get_help(self):
-            return 'configure client key and secret based authentication'
+            return 'show auth information'

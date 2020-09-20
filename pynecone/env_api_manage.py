@@ -1,7 +1,7 @@
 from pynecone import Shell
 
-from .env_api_auth import EnvApiAuth
-from .env_api_url import EnvApiUrl
+from .api_auth import ApiAuth
+from .api_url import ApiUrl
 
 
 class EnvApiManage(Shell):
@@ -11,8 +11,8 @@ class EnvApiManage(Shell):
 
         def get_commands(self):
             return [
-                    EnvApiAuth(),
-                    EnvApiUrl()
+                    ApiAuth(),
+                    ApiUrl()
             ]
 
         def add_arguments(self, parser):

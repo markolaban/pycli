@@ -1,7 +1,7 @@
 from pynecone import Cmd
 
 
-class EnvApiAuthSetBasic(Cmd):
+class ApiAuthSetBasic(Cmd):
 
         def __init__(self):
             super().__init__('basic')

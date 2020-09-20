@@ -1,7 +1,7 @@
 from pynecone import Cmd
 
 
-class EnvApiAuthSetCert(Cmd):
+class ApiAuthSetCert(Cmd):
 
         def __init__(self):
             super().__init__('cert')

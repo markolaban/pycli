@@ -1,10 +1,10 @@
 from pynecone import Cmd
 
 
-class EnvApiAuthSetNone(Cmd):
+class ApiAuthSetUser(Cmd):
 
         def __init__(self):
-            super().__init__('none')
+            super().__init__('user')
 
         def add_arguments(self, parser):
             parser.add_argument('op', choices=['one', 'two'],
@@ -15,4 +15,4 @@ class EnvApiAuthSetNone(Cmd):
             pass
 
         def get_help(self):
-            return 'disable authentication'
+            return 'configure user oauth2 flow'

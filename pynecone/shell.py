@@ -25,11 +25,11 @@ class Shell(Cmd):
                 if hasattr(args, 'subcommand'):
                     subcommand = next(iter([c for c in command.get_commands() if c.name == args.subcommand]), None)
                     if subcommand:
-                        subcommand.run(args)
+                        return subcommand.run(args)
                     else:
                         print("{0} is not a valid subcommand".format(args.subcommand))
                 else:
-                    command.run(args)
+                    return command.run(args)
             else:
                 print("{0} is not a valid command".format(args.command))
 
@@ -45,3 +45,15 @@ class Shell(Cmd):
             subsubparsers = parser.add_subparsers(dest='subcommand')
             for c in commands:
                 c.setup(subsubparsers)
+
+    def __call__(self, *args, **kwargs):
+
+        parser = argparse.ArgumentParser(prog=self.name)
+
+        self.add_arguments(parser)
+        subparsers = parser.add_subparsers(dest='command', help=self.get_help())
+
+        for c in self.get_commands():
+            c.setup(subparsers)
+
+        return self.run(parser.parse_args(args))

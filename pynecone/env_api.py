@@ -1,6 +1,6 @@
 from pynecone import Shell
 
-from .env_api_create import EnvApiCreate
+from .env_api_new import EnvApiNew
 from .env_api_delete import EnvApiDelete
 from .env_api_list import EnvApiList
 from .env_api_manage import EnvApiManage
@@ -13,7 +13,7 @@ class EnvApi(Shell):
 
         def get_commands(self):
             return [
-                    EnvApiCreate(),
+                    EnvApiNew(),
                     EnvApiDelete(),
                     EnvApiList(),
                     EnvApiManage()
@@ -23,4 +23,4 @@ class EnvApi(Shell):
             pass
 
         def get_help(self):
-            return 'manage apis'
+            return 'manage APIs'

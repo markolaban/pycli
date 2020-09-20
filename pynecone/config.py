@@ -16,6 +16,14 @@ class Config:
         with open(self.full_path, 'w') as file:
             yaml.dump(self.data, file)
 
+    def get_blank_environment(self, name):
+        return {
+            'name': name,
+            'apis': [],
+            # 'database': {'url': 'sqlite:///{0}'.format(os.path.join(self.path, 'pynecone.db'))},
+            # 'server': {'host': '0.0.0.0', 'port': '8080'}
+        }
+
     def create_environment(self, name):
         self.generate()
 
@@ -24,11 +32,7 @@ class Config:
         if found:
             return None
 
-        env = { 'name': name,
-                'auth': {},
-                'database': {'url': 'sqlite:///{0}'.format(os.path.join(self.path, 'pynecone.db'))},
-                'server': {'host': '0.0.0.0', 'port': '8080'}}
-
+        env = self.get_blank_environment(name)
         self.data['environments'].append(env)
         self.save()
         return env
@@ -63,6 +67,15 @@ class Config:
     def get_active_environment(self):
         self.generate()
 
+        found = [env for env in self.data.get('environments') if env['name'] == self.data['active_environment']]
+        if found:
+            return found[0]
+        else:
+            return None
+
+    def get_active_environment_name(self):
+        self.generate()
+
         return self.data['active_environment']
 
     def list_environments(self):
@@ -70,15 +83,34 @@ class Config:
 
         return self.data['environments']
 
-    def get_environment(self, name):
+    def get_environment(self, name, yaml=False):
         self.generate()
 
         found = [env for env in self.data.get('environments') if env['name'] == name]
         if found:
-            return yaml.dump(found)
+            if yaml:
+                return yaml.dump(found[0])
+            else:
+                return found[0]
         else:
             return None
 
+    def create_api(self, name, url):
+        env = self.get_active_environment()
+
+        apis = env.get('apis')
+
+        if not apis:
+            apis = []
+            env['apis'] = apis
+
+        if [api for api in apis if api['name'] == name]:
+            return None
+
+        api = {'name': name, 'url': url, 'auth': {'method': None}}
+        apis.append(api)
+        self.save()
+        return api
 
     def generate(self, force=False):
         if self.data.get('environments') is None or force:
@@ -86,12 +118,7 @@ class Config:
 
             self.data = {
                 'environments': [
-                        {
-                            'name': 'local',
-                            'auth': {},
-                            'database': {'url': 'sqlite:///{0}'.format(os.path.join(self.path, 'pynecone.db'))},
-                            'server': {'host': '0.0.0.0', 'port': '8080'}
-                        }
+                        self.get_blank_environment('local')
                 ],
                 'active_environment': 'local'}
 

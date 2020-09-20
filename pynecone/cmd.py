@@ -1,5 +1,6 @@
 from abc import abstractmethod
 from .client import Client
+import argparse
 
 
 class Cmd(Client):
@@ -27,3 +28,8 @@ class Cmd(Client):
         ui = input('[{0}]'.format(self.name))
         self.run(ui)
         self.repl()
+
+    def __call__(self, *args, **kwargs):
+        parser = argparse.ArgumentParser(prog=self.name)
+        self.add_arguments(parser)
+        return self.run(parser.parse_args(args))

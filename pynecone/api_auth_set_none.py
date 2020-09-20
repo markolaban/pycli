@@ -1,10 +1,10 @@
 from pynecone import Cmd
 
 
-class EnvApiUrl(Cmd):
+class ApiAuthSetNone(Cmd):
 
         def __init__(self):
-            super().__init__('url')
+            super().__init__('none')
 
         def add_arguments(self, parser):
             parser.add_argument('op', choices=['one', 'two'],
@@ -15,4 +15,4 @@ class EnvApiUrl(Cmd):
             pass
 
         def get_help(self):
-            return 'manage api url'
+            return 'disable authentication'

@@ -1,10 +1,10 @@
 from pynecone import Cmd
 
 
-class EnvApiAuthSetUser(Cmd):
+class ApiAuthSetSecret(Cmd):
 
         def __init__(self):
-            super().__init__('user')
+            super().__init__('secret')
 
         def add_arguments(self, parser):
             parser.add_argument('op', choices=['one', 'two'],
@@ -15,4 +15,4 @@ class EnvApiAuthSetUser(Cmd):
             pass
 
         def get_help(self):
-            return 'configure user oauth2 flow'
+            return 'configure client key and secret based authentication'

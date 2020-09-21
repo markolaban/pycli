@@ -20,11 +20,11 @@ class RestPut(RestCmd):
         parser.add_argument('--debug', action='store_true', help="enable debugging")
 
     def run(self, args):
-        print(self.put( args.api,
+        return self.put( args.api,
                         args.path,
                         args.debug,
                         dict([kv.split(':') for kv in args.params]) if args.params else None,
-                        json_str=args.json))
+                        json_str=args.json)
 
     def get_help(self):
         return 'make a PUT request to the API'

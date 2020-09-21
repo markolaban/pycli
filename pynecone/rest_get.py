@@ -18,10 +18,10 @@ class RestGet(RestCmd):
         parser.add_argument('--debug', action='store_true', help="enable debugging")
 
     def run(self, args):
-        print(self.get(args.api,
+        return self.get(args.api,
                        args.path,
                        args.debug,
-                       dict([kv.split(':') for kv in args.params]) if args.params else None))
+                       dict([kv.split(':') for kv in args.params]) if args.params else None)
 
     def get_help(self):
         return 'make a REST GET API call'

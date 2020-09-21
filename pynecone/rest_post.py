@@ -20,11 +20,11 @@ class RestPost(RestCmd):
         parser.add_argument('--debug', action='store_true', help="enable debugging")
 
     def run(self, args):
-        print(self.post(args.api,
+        return self.post(args.api,
                         args.path,
                         args.debug,
                         dict([kv.split(':') for kv in args.params]) if args.params else None,
-                        json_str=args.json))
+                        json_str=args.json)
 
     def get_help(self):
         return 'make a POST request on the API'

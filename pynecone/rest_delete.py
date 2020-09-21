@@ -17,7 +17,7 @@ class RestDelete(RestCmd):
         parser.add_argument('--debug', action='store_true', help="enable debugging")
 
     def run(self, args):
-        print(self.delete(args.api, args.path, args.debug))
+        return self.delete(args.api, args.path, args.debug)
 
     def get_help(self):
         return 'make a DELETE request to the API'

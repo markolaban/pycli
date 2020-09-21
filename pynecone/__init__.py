@@ -9,5 +9,5 @@ from .producer import *
 from .rest import *
 from .amqp import *
 
-__version__ = "0.0.35"
+__version__ = "0.0.36"
 

@@ -1,7 +1,9 @@
 from .cmd import *
 from .shell import *
+from .folder import *
+from .mount import *
 from .auth import *
-from .cfg import *
+from .api import *
 from .task import *
 from .broker import *
 from .consumer import *
@@ -9,5 +11,5 @@ from .producer import *
 from .rest import *
 from .amqp import *
 
-__version__ = "0.0.37"
+__version__ = "0.0.38"
 

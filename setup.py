@@ -10,7 +10,7 @@ README = (HERE / "README.md").read_text()
 # This call to setup() does all the work
 setup(
     name="pynecone",
-    version="0.0.36",
+    version="0.0.37",
     description="Build your CLI with ease",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -36,8 +36,8 @@ setup(
                       "SQLAlchemy",
                       "Jinja2",
                       "pyyaml",
-                      "flask-mqtt",
-                      "flask"],
+                      "flask==1.1.2",
+                      "flask-mqtt"],
     entry_points={
         "console_scripts": [
             "pynecone=pynecone.__main__:main",

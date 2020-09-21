@@ -10,7 +10,7 @@ README = (HERE / "README.md").read_text()
 # This call to setup() does all the work
 setup(
     name="pynecone",
-    version="0.0.34",
+    version="0.0.35",
     description="Build your CLI with ease",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -26,8 +26,8 @@ setup(
     packages=find_packages(exclude=("tests",)),
     package_data={'': ['*.jinja']},
     include_package_data=True,
-    install_requires=["requests_toolbelt",
-                      "requests",
+    install_requires=["requests",
+                      "requests_toolbelt",
                       "python-dotenv",
                       "keyring",
                       "tabulate",

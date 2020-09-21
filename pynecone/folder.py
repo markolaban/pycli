@@ -1,4 +1,5 @@
 from .proto import ProtoShell, ProtoCmd
+from .config import Config
 
 from os import listdir
 from os.path import isfile, isdir, join
@@ -69,11 +70,24 @@ class Folder(ProtoShell):
 
         def __init__(self, mount_path='.'):
             super().__init__('list',
-                             'list files and folders on path',
-                             lambda args: MountLocal(mount_path).list(args.path))
+                             'list files and folders on path')
 
         def add_arguments(self, parser):
-            parser.add_argument('path', help="specifies the path to be listed", default='.', const='.', nargs='?')
+            parser.add_argument('path', help="specifies the path to be listed", default=None, const=None, nargs='?')
+
+        def run(self, args):
+            if args.path:
+                fragments = [fragment for fragment in args.path.split('/') if fragment]
+                if fragments:
+                    mount = fragments[0]
+                    path = '/'.join(fragments[1:])
+                    print(mount, path)
+                else:
+                    for mount in Config.init().list_mount():
+                        print(mount['name'])
+            else:
+                for mount in Config.init().list_mount():
+                    print(mount['name'])
 
     def __init__(self):
         super().__init__('folder', [Folder.Get(), Folder.Put(), Folder.Delete(), Folder.List()], 'folder shell')

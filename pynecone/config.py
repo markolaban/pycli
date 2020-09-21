@@ -168,10 +168,60 @@ class Config:
     def get_active_api(self):
         return [api for api in self.list_api()][0]
 
-    def get_api(self, name, yaml=False):
+    def get_api(self, name, outputYaml=False):
         api = [api for api in self.list_api() if api['name'] == name]
         if api:
-            return yaml.dump(api[0]) if yaml else api[0]
+            return yaml.dump(api[0]) if outputYaml else api[0]
+        else:
+            return None
+
+    def delete_api(self, name):
+        env = self.get_active_environment()
+        found = [api for api in env['apis'] if api['name'] == name]
+
+        if found:
+            env['apis'] = [i for i in env['apis'] if i['name'] != name]
+            self.save()
+            return name
+        else:
+            return None
+
+    def create_mount(self, name, mount):
+        env = self.get_active_environment()
+
+        mounts = env.get('mounts')
+
+        if not mounts:
+            mounts = []
+            env['mounts'] = mounts
+
+        if [mount for mount in mounts if mount['name'] == name]:
+            return None
+
+        mount = {'name': name, 'mount': mount }
+        mounts.append(mount)
+        self.save()
+        return mount
+
+    def get_mount(self, name, outputYaml=False):
+        mount = [mount for mount in self.list_mount() if mount['name'] == name]
+        if mount:
+            return yaml.dump(mount[0]) if outputYaml else mount[0]
+        else:
+            return None
+
+    def list_mount(self):
+        env = self.get_active_environment()
+        return [mount for mount in env['mounts']]
+
+    def delete_mount(self, name):
+        env = self.get_active_environment()
+        found = [mount for mount in env['mounts'] if mount['name'] == name]
+
+        if found:
+            env['mounts'] = [i for i in env['mounts'] if i['name'] != name]
+            self.save()
+            return name
         else:
             return None
 

@@ -5,70 +5,49 @@ from os import listdir
 from os.path import isfile, isdir, join
 
 
-class MountLocal(ProtoShell):
+class MountProvider:
 
-    def __init__(self, path='.'):
-        self.path = path
-
-    def get(self, path):
-        if isdir(path):
-            return Folder(path, self.path)
-        else:
-            return File(path, self.path)
-
-    def list(self, path):
-        return [File(f, path) if isfile(join(path, f)) else Folder(f, path) for f in listdir(path)]
-
-    def put(self, path, f):
-        pass
-
-
-class File(ProtoShell):
-
-    def __init__(self, path, mount_path='.'):
-        self.path = path
-        self.mount_path = mount_path
+    def __init__(self, name):
+        super().__init__(name)
 
 
 class Folder(ProtoShell):
 
-    def __init__(self, path, mount_path):
-        self.path = path
-        self.mount_path = mount_path
-
     class Get(ProtoCmd):
 
-        def __init__(self, mount_path='.'):
+        def __init__(self):
             super().__init__('get',
-                             'get folder or file from path',
-                             lambda args: MountLocal(mount_path).get(args.path))
+                             'get folder or file from path')
 
         def add_arguments(self, parser):
             parser.add_argument('path', help="specifies the path", default='.', const='.', nargs='?')
 
+        def run(self, args):
+            mount = Config.init().get_mount(args.path)
+
     class Put(ProtoCmd):
 
-        def __init__(self, mount_path='.'):
+        def __init__(self):
             super().__init__('put',
                              'put folder or file to path',
-                             lambda args: MountLocal(mount_path).put(args.path, args.f))
+                             lambda args: Config.init().get_folderfile(path))
 
         def add_arguments(self, parser):
             parser.add_argument('path', help="specifies the path", default='.', const='.', nargs='?')
 
     class Delete(ProtoCmd):
 
-        def __init__(self, mount_path='.'):
+        def __init__(self):
             super().__init__('delete',
                              'delete path',
-                             lambda args: MountLocal(mount_path).delete(args.path))
+                             lambda args: Config.init().get_folderfile(path))
 
         def add_arguments(self, parser):
             parser.add_argument('path', help="specifies the path to be deleted", default='.', const='.', nargs='?')
 
     class List(ProtoCmd):
 
-        def __init__(self, mount_path='.'):
+        def __init__(self):
             super().__init__('list',
                              'list files and folders on path')
 

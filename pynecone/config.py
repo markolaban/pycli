@@ -1,12 +1,26 @@
 import yaml
 import os
 
+import importlib
+import pkgutil
+import modules
+
+def iter_namespace(ns_pkg):
+    # Specifying the second argument (prefix) to iter_modules makes the
+    # returned name an absolute name instead of a relative one. This allows
+    # import_module to work without having to do additional modification to
+    # the name.
+    return pkgutil.iter_modules(ns_pkg.__path__, ns_pkg.__name__ + ".")
+
 
 class Config:
+
     def __init__(self, name, path):
         self.path = path
         self.full_path = os.path.join(path, name)
         self.data = {}
+        self.modules = [name for _, name, _ in iter_namespace(modules)]
+
 
     def load(self):
         with open(self.full_path) as file:
@@ -203,10 +217,20 @@ class Config:
         self.save()
         return mount
 
-    def get_mount(self, name, outputYaml=False):
+    def get_mount_cfg(self, name, outputYaml=False):
         mount = [mount for mount in self.list_mount() if mount['name'] == name]
         if mount:
             return yaml.dump(mount[0]) if outputYaml else mount[0]
+        else:
+            return None
+
+
+    def get_mount(self, name):
+        cfg = self.get_mount_cfg(name)
+        if cfg:
+            mount_mods = [m.split('_')[1] for m in self.modules if m.startswith('modules.mount_')]
+            mount_mod = [m for m in mount_mods if m == cfg['mount']['type']]
+            return getattr(importlib.import_module('modules.mount_{0}'.format(mount_mod[0])), 'Module')(**cfg['mount'])
         else:
             return None
 

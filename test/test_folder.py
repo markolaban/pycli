@@ -1,6 +1,6 @@
 import unittest
 
-from pynecone import Folder
+from pynecone import FolderFile
 
 class FolderTestCase(unittest.TestCase):
     def test_something(self):

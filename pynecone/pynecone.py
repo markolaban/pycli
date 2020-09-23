@@ -8,6 +8,7 @@ from .server import Server
 from .job import Job
 from .repl import Repl
 from .rest import Rest
+from .test import Test
 
 class Pynecone(Shell):
 
@@ -15,7 +16,16 @@ class Pynecone(Shell):
         super().__init__('pynecone')
 
     def get_commands(self):
-        return [Gen(), Env(), Task(), Folder(), Mount(), Server(), Job(), Repl(), Rest()]
+        return [Gen(),
+                Env(),
+                Task(),
+                Folder(),
+                Mount(),
+                Server(),
+                Test(),
+                Job(),
+                Repl(),
+                Rest()]
 
     def add_arguments(self, parser):
         pass

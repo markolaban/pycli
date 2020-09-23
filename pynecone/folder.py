@@ -7,38 +7,66 @@ from os.path import isfile, isdir, join
 
 class Folder(ProtoShell):
 
+    class Copy(ProtoCmd):
+
+        def __init__(self):
+            super().__init__('copy',
+                             'copy from source_path to target_path')
+
+        def add_arguments(self, parser):
+            parser.add_argument('source_path', help="specifies the source_path")
+            parser.add_argument('target_path', help="specifies the target_path")
+
+        def run(self, args):
+            config = Config.init()
+            source_folder = config.get_folder(args.source_path)
+            target_folder = config.get_folder(args.target_path)
+            source_folder.copy(target_folder)
+
     class Get(ProtoCmd):
 
         def __init__(self):
             super().__init__('get',
-                             'get folder or file from path')
+                             'download folder or file from path')
 
         def add_arguments(self, parser):
-            parser.add_argument('path', help="specifies the path", default='.', const='.', nargs='?')
+            parser.add_argument('path', help="specifies the path")
+            parser.add_argument('--local_path', help="specifies the local path where to save", default='.')
 
         def run(self, args):
-            folder = Config.init().get_folder(args.path)
-            print([c.get_name() for c in folder.get_children()])
+            config = Config.init()
+            folder = config.get_folder(args.path)
+            local_path = config.get_folder(args.local_path)
+            folder.get(local_path)
 
     class Put(ProtoCmd):
 
         def __init__(self):
             super().__init__('put',
-                             'put folder or file to path',
-                             lambda args: Config.init().get_folderfile(path))
+                             'upload folder or file to path')
 
         def add_arguments(self, parser):
-            parser.add_argument('path', help="specifies the path", default='.', const='.', nargs='?')
+            parser.add_argument('local_path', help="specifies the local path to upload")
+            parser.add_argument('target_path', help="specifies the target path")
+
+
+        def run(self, args):
+            config = Config.init()
+            folder = config.get_folder(args.path)
+            local_path = config.get_folder(args.local_path)
+            folder.get(local_path)
 
     class Delete(ProtoCmd):
 
         def __init__(self):
             super().__init__('delete',
-                             'delete path',
-                             lambda args: Config.init().get_folderfile(path))
+                             'delete path')
 
         def add_arguments(self, parser):
-            parser.add_argument('path', help="specifies the path to be deleted", default='.', const='.', nargs='?')
+            parser.add_argument('path', help="specifies the path to be deleted")
+
+        def run(self, args):
+            print(Config.init().get_folder(args.path).delete())
 
     class List(ProtoCmd):
 
@@ -51,11 +79,10 @@ class Folder(ProtoShell):
 
         def run(self, args):
             if args.path:
-                fragments = [fragment for fragment in args.path.split('/') if fragment]
-                if fragments:
-                    mount = fragments[0]
-                    path = '/'.join(fragments[1:])
-                    print(mount, path)
+                if args.path:
+                    folder = Config.init().get_folder(args.path)
+                    for c in folder.get_children():
+                        print(c.get_name())
                 else:
                     for mount in Config.init().list_mount():
                         print(mount['name'])
@@ -63,5 +90,23 @@ class Folder(ProtoShell):
                 for mount in Config.init().list_mount():
                     print(mount['name'])
 
+    class Checksum(ProtoCmd):
+
+        def __init__(self):
+            super().__init__('checksum',
+                             'calculate the checksum of the folder at path')
+
+        def add_arguments(self, parser):
+            parser.add_argument('path', help="specifies the path to be deleted")
+
+        def run(self, args):
+            print(Config.init().get_folder(args.path).hash())
+
     def __init__(self):
-        super().__init__('folder', [Folder.Get(), Folder.Put(), Folder.Delete(), Folder.List()], 'folder shell')
+        super().__init__('folder', [Folder.Copy(), Folder.Get(), Folder.Put(), Folder.Delete(), Folder.List(), Folder.Checksum()], 'folder shell')
+
+    def copy_to(self, target):
+        pass
+
+    def get(self, local_path):
+        pass

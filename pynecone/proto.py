@@ -2,7 +2,6 @@ from .shell import Shell
 from .cmd import Cmd
 
 
-
 class ProtoShell(Shell):
 
         def __init__(self, name, commands, helpmsg):

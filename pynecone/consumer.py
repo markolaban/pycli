@@ -1,6 +1,5 @@
 from abc import abstractmethod
 from .cmd import Cmd
-from .cfg import Cfg
 
 
 class Consumer(Cmd):
@@ -21,4 +20,4 @@ class Consumer(Cmd):
         pass
 
     def get_config(self):
-        return Cfg()
+        return None

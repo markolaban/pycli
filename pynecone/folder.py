@@ -5,12 +5,6 @@ from os import listdir
 from os.path import isfile, isdir, join
 
 
-class MountProvider:
-
-    def __init__(self, name):
-        super().__init__(name)
-
-
 class Folder(ProtoShell):
 
     class Get(ProtoCmd):
@@ -23,7 +17,8 @@ class Folder(ProtoShell):
             parser.add_argument('path', help="specifies the path", default='.', const='.', nargs='?')
 
         def run(self, args):
-            mount = Config.init().get_mount(args.path)
+            folder = Config.init().get_folder(args.path)
+            print([c.get_name() for c in folder.get_children()])
 
     class Put(ProtoCmd):
 

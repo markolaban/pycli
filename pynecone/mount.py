@@ -56,7 +56,7 @@ class Mount(ProtoShell):
         def __init__(self):
             super().__init__('get',
                              'get mount',
-                             lambda args: print(Config.init().get_mount(args.name, True)))
+                             lambda args: print(Config.init().get_mount_cfg(args.name, True)))
 
         def add_arguments(self, parser):
             parser.add_argument('name', help="specifies the name of the mount to be retrieved")

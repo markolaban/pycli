@@ -230,9 +230,16 @@ class Config:
         if cfg:
             mount_mods = [m.split('_')[1] for m in self.modules if m.startswith('modules.mount_')]
             mount_mod = [m for m in mount_mods if m == cfg['mount']['type']]
-            return getattr(importlib.import_module('modules.mount_{0}'.format(mount_mod[0])), 'Module')(**cfg['mount'])
+            mod_cfg = dict(cfg['mount'])
+            mod_cfg['name'] = name
+            return getattr(importlib.import_module('modules.mount_{0}'.format(mount_mod[0])), 'Module')(**mod_cfg)
         else:
             return None
+
+    def get_folder(self, path):
+        mount_path = '/{0}'.format(path.split('/')[1])
+        target_path = '/'.join(path.split('/')[2:])
+        return self.get_mount(mount_path).get_folder(target_path)
 
     def list_mount(self):
         env = self.get_active_environment()

@@ -1,7 +1,7 @@
 from .shell import Shell
 from .gen import Gen
 from .env import Env
-from .task import Task
+from .taskcmd import TaskCmd
 from .folder import Folder
 from .mount import Mount
 from .server import Server
@@ -18,7 +18,7 @@ class Pynecone(Shell):
     def get_commands(self):
         return [Gen(),
                 Env(),
-                Task(),
+                TaskCmd(),
                 Folder(),
                 Mount(),
                 Server(),

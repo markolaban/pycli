@@ -1,8 +1,5 @@
 import pika
-from .broker import Broker
-from .consumer import Consumer
-from .producer import Producer
-from .task import Task
+from pynecone import BrokerProvider, Consumer, Producer, TaskCmd
 
 
 class AMQPConsumer(Consumer):
@@ -23,8 +20,8 @@ class AMQPConsumer(Consumer):
 
     @classmethod
     def callback(cls, args):
-        return lambda channel, method, properties, body: Task.get_handler(args.script,
-                                                                          args.method)({'channel': channel,
+        return lambda channel, method, properties, body: TaskCmd.get_handler(args.script,
+                                                                             args.method)({'channel': channel,
                                                                                         'method': method,
                                                                                         'properties': properties,
                                                                                         'body': body,
@@ -46,7 +43,7 @@ class AMQPProducer(Producer):
                                            body=args.message)
 
 
-class AMQP(Broker):
+class AMQPBroker(BrokerProvider):
 
     def get_consumer(self):
         return AMQPConsumer('consumer')

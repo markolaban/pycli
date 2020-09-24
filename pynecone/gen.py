@@ -50,7 +50,7 @@ class Gen(Cmd):
 
     def add_arguments(self, parser):
         parser.add_argument('op', choices=['cmd', 'shell'],
-                            help="authenticate", default='cmd', const='cmd', nargs='?')
+                            help="generate a command (default) or a shell", default='cmd', const='cmd', nargs='?')
         parser.add_argument('names', help="command names", nargs='+')
         parser.add_argument('--output_folder', help="use the specified output folder", default=os.path.join(os.getcwd()))
 

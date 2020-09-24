@@ -256,6 +256,62 @@ class Config:
         else:
             return None
 
+    def create_broker(self, name, broker):
+        env = self.get_active_environment()
+
+        brokers = env.get('brokers')
+
+        if not brokers:
+            brokers = []
+            env['brokers'] = brokers
+
+        if [broker for broker in brokers if broker['name'] == name]:
+            return None
+
+        broker = {'name': name, 'broker': broker }
+        brokers.append(broker)
+        self.save()
+        return broker
+
+    def get_broker_cfg(self, name, outputYaml=False):
+        broker = [broker for broker in self.list_broker() if broker['name'] == name]
+        if broker:
+            return yaml.dump(broker[0]) if outputYaml else broker[0]
+        else:
+            return None
+
+
+    def get_broker(self, name):
+        cfg = self.get_broker_cfg(name)
+        if cfg:
+            broker_mods = [m.split('_')[1] for m in self.modules if m.startswith('modules.broker_')]
+            broker_mod = [m for m in broker_mods if m == cfg['broker']['type']]
+            mod_cfg = dict(cfg['broker'])
+            mod_cfg['name'] = name
+            return getattr(importlib.import_module('modules.broker_{0}'.format(broker_mod[0])), 'Module')(**mod_cfg)
+        else:
+            return None
+
+    def get_topic(self, path):
+        broker_path = '/{0}'.format(path.split('/')[1])
+        target_path = '/'.join(path.split('/')[2:])
+        return self.get_broker(broker_path).get_topic(target_path)
+
+    def list_broker(self):
+        env = self.get_active_environment()
+        return [broker for broker in env['brokers']]
+
+    def delete_broker(self, name):
+        env = self.get_active_environment()
+        found = [broker for broker in env['brokers'] if broker['name'] == name]
+
+        if found:
+            env['brokers'] = [i for i in env['brokers'] if i['name'] != name]
+            self.save()
+            return name
+        else:
+            return None
+
     def get_timeout(self):
         return 20
 

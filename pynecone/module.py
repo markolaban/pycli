@@ -45,3 +45,46 @@ class FolderProvider(ABC):
     @abstractmethod
     def delete(self, name):
         pass
+
+
+class BrokerProvider(ABC):
+
+    @abstractmethod
+    def get_topic(self, name):
+        pass
+
+
+class TopicProvider(ABC):
+
+    @abstractmethod
+    def get_consumer(self):
+        pass
+
+    @abstractmethod
+    def get_producer(self):
+        pass
+
+    @abstractmethod
+    def send_message(self, message):
+        pass
+
+
+class JobSchedulerProvider(ABC):
+
+    @abstractmethod
+    def run(self, job):
+        pass
+
+
+class TaskSchedulerProvider(ABC):
+
+    @abstractmethod
+    def run(self, task):
+        pass
+
+
+class TaskProvider(ABC):
+
+    @abstractmethod
+    def run(self, args):
+        pass

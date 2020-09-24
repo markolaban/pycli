@@ -2,7 +2,7 @@ import importlib.util
 from .cmd import Cmd
 
 
-class Task(Cmd):
+class TaskCmd(Cmd):
 
     def __init__(self):
         super().__init__("task")

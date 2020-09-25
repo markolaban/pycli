@@ -64,8 +64,18 @@ class TopicProvider(ABC):
     def get_producer(self):
         pass
 
+
+class ConsumerProvider(ABC):
+
     @abstractmethod
-    def send_message(self, message):
+    def consume(self, args):
+        pass
+
+
+class ProducerProvider(ABC):
+
+    @abstractmethod
+    def produce(self, message):
         pass
 
 
@@ -86,5 +96,5 @@ class TaskSchedulerProvider(ABC):
 class TaskProvider(ABC):
 
     @abstractmethod
-    def run(self, args):
+    def run(self, *args, **kwargs):
         pass

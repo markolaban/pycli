@@ -1,20 +1,24 @@
 import pika
-from pynecone import BrokerProvider, Consumer, Producer, TaskCmd
+from pynecone import BrokerProvider, TopicProvider, ConsumerProvider, ProducerProvider, TaskCmd
 
 
-class AMQPConsumer(Consumer):
+class AMQPConsumer(ConsumerProvider):
+
+    def __init__(self, cfg, name):
+        self.cfg = cfg
+        self.name = name
 
     def consume(self, args):
-        credentials = pika.PlainCredentials(self.get_config().get_amqp_client_key(),
-                                            self.get_config().get_amqp_client_secret())
+        credentials = pika.PlainCredentials(self.cfg['client_key'],
+                                            self.cfg['client_secret'])
         connection = pika.BlockingConnection(
-            pika.ConnectionParameters(self.get_config().get_amqp_host(),
-                                      self.get_config().get_amqp_port(),
-                                      self.get_config().get_amqp_path(),
+            pika.ConnectionParameters(self.cfg['host'],
+                                      self.cfg['port'],
+                                      self.cfg['path'],
                                       credentials))
         channel = connection.channel()
-        channel.queue_declare(queue=args.topic)
-        channel.basic_consume(queue=args.topic,
+        channel.queue_declare(queue=self.name)
+        channel.basic_consume(queue=self.name,
                               on_message_callback=self.callback(args))
         channel.start_consuming()
 
@@ -28,25 +32,43 @@ class AMQPConsumer(Consumer):
                                                                                         'args': args})
 
 
-class AMQPProducer(Producer):
+class AMQPProducer(ProducerProvider):
 
-    def produce(self, args):
-        credentials = pika.PlainCredentials(self.get_config().get_amqp_client_key(),
-                                            self.get_config().get_amqp_client_secret())
+    def __init__(self, cfg, name):
+        self.cfg = cfg
+        self.name = name
+
+    def produce(self, message):
+        credentials = pika.PlainCredentials(self.cfg['client_key'],
+                                            self.cfg['client_secret'])
         connection = pika.BlockingConnection(
-            pika.ConnectionParameters(self.get_config().get_amqp_host(),
-                                      self.get_config().get_amqp_port(),
-                                      self.get_config().get_amqp_path(),
+            pika.ConnectionParameters(self.cfg['host'],
+                                      self.cfg['port'],
+                                      self.cfg['path'],
                                       credentials))
-        connection.channel().basic_publish(exchange=args.exchange,
-                                           routing_key=args.topic,
-                                           body=args.message)
+        connection.channel().basic_publish(exchange=self.cfg['exchange'],
+                                           routing_key=self.name,
+                                           body=message)
 
 
-class AMQPBroker(BrokerProvider):
+class AMQPTopic(TopicProvider):
+
+    def __init__(self, cfg, name):
+        self.cfg = cfg
+        self.name = name
 
     def get_consumer(self):
-        return AMQPConsumer('consumer')
+        return AMQPConsumer(self.cfg, self.name)
 
     def get_producer(self):
-        return AMQPProducer('producer')
+        return AMQPProducer(self.cfg, self.name)
+
+
+class Module(BrokerProvider):
+
+    def __init__(self, **kwargs):
+        self.cfg = kwargs
+
+    def get_topic(self, name):
+        return AMQPTopic(self.cfg, name)
+

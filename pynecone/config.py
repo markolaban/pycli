@@ -6,6 +6,7 @@ import importlib
 import pkgutil
 import modules
 
+
 def iter_namespace(ns_pkg):
     # Specifying the second argument (prefix) to iter_modules makes the
     # returned name an absolute name instead of a relative one. This allows
@@ -13,12 +14,13 @@ def iter_namespace(ns_pkg):
     # the name.
     return pkgutil.iter_modules(ns_pkg.__path__, ns_pkg.__name__ + ".")
 
+
 def get_config_name():
-        main = sys.modules['__main__']
-        if hasattr(main, '__file__'):
-            print(os.path.splitext(main.__file__)[0])
-        else:
-            print(__name__)
+    main = sys.modules['__main__']
+    if hasattr(main, '__file__'):
+        return os.path.splitext(main.__file__)[0]
+    else:
+        return __name__
 
 
 class Config:
@@ -121,7 +123,7 @@ class Config:
 
         if not entries:
             entries = []
-            env['entries'] = entries
+            env[section] = entries
 
         if [entry for entry in entries if entry['name'] == name]:
             return None
@@ -150,11 +152,10 @@ class Config:
     def put_entry_value(self, section, name, key, value):
         entry = [entry for entry in self.list_entries(section) if entry['name'] == name]
         if entry:
-            entry[0]['key'] = value
+            entry[0][key] = value
         else:
-            entries = self.list_entries(section)
             entry = {'name': name, key: value}
-            entries.append(entry)
+            self.append_entry(section, entry)
         self.save()
 
     def get_entry_value(self, section, name, key, default=None):
@@ -166,10 +167,9 @@ class Config:
         if cfg:
             entry_mods = [m.split('_')[1] for m in self.modules if m.startswith('modules.{0}_'.format(section))]
             entry_mod = [m for m in entry_mods if m == cfg['type']]
-            mod_cfg = dict(cfg['data'])
+            mod_cfg = dict(cfg)
             mod_cfg['name'] = name
-            mod_cfg['type'] = cfg['type']
-            return getattr(importlib.import_module('modules.{0}_{1}'.format(entry_mod[0])), 'Module')().get_instance(**mod_cfg)
+            return getattr(importlib.import_module('modules.{0}_{1}'.format(section, entry_mod[0])), 'Module')().get_instance(**mod_cfg)
         else:
             return None
 
@@ -177,6 +177,14 @@ class Config:
         env = self.get_active_environment()
         entries = env.get(section)
         return entries if entries else []
+
+    def append_entry(self, section, entry):
+        env = self.get_active_environment()
+        entries = env.get(section)
+        if entries:
+            entries.append(entry)
+        else:
+            env[section] = [entry]
 
     def delete_entry(self, section, name):
         env = self.get_active_environment()
@@ -217,7 +225,7 @@ class Config:
 
 
     @classmethod
-    def init(cls, name='{0}.yml'.format(get_config_name()), path=os.getcwd()):
+    def init(cls, name='config.yml', path=os.getcwd()):
         cfg = Config(name, path)
 
         if not os.path.exists(cfg.full_path):

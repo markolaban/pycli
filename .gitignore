@@ -135,4 +135,5 @@ dmypy.json
 #temp
 commands/
 pynecone.yml
+config.yml
 .certs/

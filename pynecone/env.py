@@ -11,8 +11,7 @@ class Env(ProtoShell):
                              'create an api')
 
         def add_arguments(self, parser):
-            parser.add_argument('name', help="specifies the name of the API")
-            parser.add_argument('url', help="specifies the url of the API")
+            parser.add_argument('name', help="specifies the name of the environment")
 
         def run(self, args):
             res = Config.init().create_environment(args.name)
@@ -29,7 +28,7 @@ class Env(ProtoShell):
 
         def run(self, args):
             envs = Config.init().list_environments()
-            active = Config.init().get_active_environment()
+            active = Config.init().get_active_environment_name()
 
             for env in envs:
                 if env['name'] == active:

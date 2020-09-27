@@ -82,6 +82,24 @@ class Folder(ProtoShell):
         def run(self, args):
             Folder.from_path(args.target_path).put(args.local_path)
 
+    class Create(ProtoCmd):
+
+        def __init__(self):
+            super().__init__('create',
+                             'create folder or file on path')
+
+        def add_arguments(self, parser):
+            parser.add_argument('op', choices=['folder', 'file'],
+                                help="specifies whether to create folder (default) or file", default='folder', const='folder', nargs='?')
+            parser.add_argument('target_path', help="specifies the target path")
+            parser.add_argument('name', help="specifies the name of the folder or file to be created")
+
+        def run(self, args):
+            if args.op == 'folder':
+                Folder.from_path(args.target_path).create_folder(args.name)
+            else:
+                Folder.from_path(args.target_path).create_file(args.name)
+
     class Delete(ProtoCmd):
 
         def __init__(self):
@@ -127,10 +145,10 @@ class Folder(ProtoShell):
             parser.add_argument('path', help="specifies the path to be deleted")
 
         def run(self, args):
-            print(Folder.from_path(args.path).hash())
+            print(Folder.from_path(args.path).get_hash())
 
     def __init__(self):
-        super().__init__('folder', [Folder.Copy(), Folder.Get(), Folder.Put(), Folder.Delete(), Folder.List(), Folder.Checksum()], 'folder shell')
+        super().__init__('folder', [Folder.Create(), Folder.Copy(), Folder.Get(), Folder.Put(), Folder.Delete(), Folder.List(), Folder.Checksum()], 'folder shell')
 
     @classmethod
     def from_path(cls, path):

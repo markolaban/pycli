@@ -4,6 +4,7 @@ from .env import Env
 from .taskcmd import TaskCmd
 from .server import Server
 from .repl import Repl
+from .api import Api
 from .rest import Rest
 from .config import Config
 from .test import Test
@@ -17,6 +18,7 @@ class Pynecone(Shell):
     def get_commands(self):
         return [Gen(),
                 Env(),
+                Api(),
                 TaskCmd(),
                 Server(),
                 Test(),

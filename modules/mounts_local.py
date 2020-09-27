@@ -1,9 +1,14 @@
-from pynecone import FolderProvider, MountProvider
+from .module_mount import MountProvider
+from .module_folder import FolderProvider
+
 import os
 import hashlib
 
 
 class Folder(FolderProvider):
+
+    def get_instance(self, **kwargs):
+        pass
 
     def __init__(self, mount, path):
         self.mount = mount
@@ -71,6 +76,9 @@ class Folder(FolderProvider):
 
 
 class Module(MountProvider):
+
+    def get_instance(self, **kwargs):
+        return Module(**kwargs)
 
     def __init__(self, **kwargs):
         self.cfg = kwargs

@@ -23,9 +23,9 @@ class Api(ProtoShell):
             def run(self, args):
                 cfg = Config.init()
                 cfg.put_entry_value('apis', args.name, 'auth_mode', 'BASIC')
-                cfg.put_entry_value('basic_username', args.name, 'basic_username', args.basic_username)
-                cfg.put_entry_value('basic_password', args.name, 'basic_password', args.basic_password)
-                cfg.put_entry_value('basic_use_digest', args.name, 'basic_use_digest', args.basic_use_digest)
+                cfg.put_entry_value('apis', args.name, 'basic_username', args.basic_username)
+                cfg.put_entry_value('apis', args.name, 'basic_password', args.basic_password)
+                cfg.put_entry_value('apis', args.name, 'basic_use_digest', args.basic_use_digest)
 
         class Cert(ProtoCmd):
 
@@ -42,9 +42,9 @@ class Api(ProtoShell):
             def run(self, args):
                 cfg = Config.init()
                 cfg.put_entry_value('apis', args.name, 'auth_mode', 'CLIENT_CERT')
-                cfg.put_entry_value('client_cert', args.name, 'client_cert', args.client_cert)
-                cfg.put_entry_value('client_cert_key', args.name, 'client_cert_key', args.client_cert_key)
-                cfg.put_entry_value('ca_bundle', args.name, 'ca_bundle', args.ca_bundle)
+                cfg.put_entry_value('apis', args.name, 'client_cert', args.client_cert)
+                cfg.put_entry_value('apis', args.name, 'client_cert_key', args.client_cert_key)
+                cfg.put_entry_value('apis', args.name, 'ca_bundle', args.ca_bundle)
 
         class NoAuth(ProtoCmd):
 
@@ -74,9 +74,9 @@ class Api(ProtoShell):
             def run(self, args):
                 cfg = Config.init()
                 cfg.put_entry_value('apis', args.name, 'auth_mode', 'CLIENT_KEY')
-                cfg.put_entry_value('client_key', args.name, 'client_key', args.client_key)
-                cfg.put_entry_value('client_secret', args.name, 'client_secret', args.client_secret)
-                cfg.put_entry_value('token_url', args.name, 'token_url', args.token_url)
+                cfg.put_entry_value('apis', args.name, 'client_key', args.client_key)
+                cfg.put_entry_value('apis', args.name, 'client_secret', args.client_secret)
+                cfg.put_entry_value('apis', args.name, 'token_url', args.token_url)
 
         class User(ProtoCmd):
 
@@ -92,8 +92,8 @@ class Api(ProtoShell):
             def run(self, args):
                 cfg = Config.init()
                 cfg.put_entry_value('apis', args.name, 'auth_mode', 'AUTH_URL')
-                cfg.put_entry_value('auth_url', args.name, 'auth_url', args.auth_url)
-                cfg.put_entry_value('callback_url', args.name, 'callback_url', args.callback_url)
+                cfg.put_entry_value('apis', args.name, 'auth_url', args.auth_url)
+                cfg.put_entry_value('apis', args.name, 'callback_url', args.callback_url)
 
         def __init__(self):
             super().__init__('auth', [Api.Auth.NoAuth(),
@@ -149,7 +149,7 @@ class Api(ProtoShell):
             parser.add_argument('url', help="specifies the url of the API")
 
         def run(self, args):
-            api = Config.init().create_entry('apis', args.name, {'auth_mode': 'NONE', 'url': args.url})
+            api = Config.init().create_entry('apis', args.name, **{'auth_mode': 'NONE', 'url': args.url})
             if api:
                 print('API {0} created'.format(args.name))
             else:

@@ -160,7 +160,10 @@ class Config:
 
     def get_entry_value(self, section, name, key, default=None):
         entry = [entry for entry in self.list_entries(section) if entry['name'] == name]
-        return entry.get(key, default)
+        if entry:
+            return entry[0].get(key, default)
+        else:
+            return default
 
     def get_entry_instance(self, section, name):
         cfg = self.get_entry_cfg(section, name)

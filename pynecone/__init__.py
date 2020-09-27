@@ -9,5 +9,5 @@ from .shell import *
 from .taskcmd import *
 from .test import *
 
-__version__ = "0.0.46"
+__version__ = "0.0.47"
 

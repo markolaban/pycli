@@ -1,4 +1,3 @@
-from pynecone import ProtoCmd
 import yaml
 import os
 import sys
@@ -14,17 +13,17 @@ def iter_namespace(ns_pkg):
     # the name.
     return pkgutil.iter_modules(ns_pkg.__path__, ns_pkg.__name__ + ".")
 
-def get_config_name(cls):
+def get_config_name():
         main = sys.modules['__main__']
         if hasattr(main, '__file__'):
             print(os.path.splitext(main.__file__)[0])
         else:
             print(__name__)
 
+
 class Config:
 
     def __init__(self, name='{0}.yml'.format(get_config_name()), path=os.getcwd()):
-        super().__init__('env', 'manage environment')
         self.path = path
         self.full_path = os.path.join(path, name)
         self.data = {}
@@ -170,7 +169,7 @@ class Config:
             mod_cfg = dict(cfg['data'])
             mod_cfg['name'] = name
             mod_cfg['type'] = cfg['type']
-            return getattr(importlib.import_module('modules.{0}_{1}'.format(entry_mod[0])), 'Module')(**mod_cfg)
+            return getattr(importlib.import_module('modules.{0}_{1}'.format(entry_mod[0])), 'Module')().get_instance(**mod_cfg)
         else:
             return None
 
@@ -189,6 +188,12 @@ class Config:
             return name
         else:
             return None
+
+    def list_commands(self):
+        env = self.get_active_environment()
+        entry_mods = [m.split('_')[1] for m in self.modules if m.startswith('modules.{0}_'.format('module'))]
+        return [getattr(importlib.import_module('modules.{0}_{1}'.format('module', entry_mod)), 'Module')().get_instance() for entry_mod in entry_mods]
+
 
     def get_timeout(self):
         return 20

@@ -1,5 +1,12 @@
-from .proto import ProtoShell, ProtoCmd
-from .config import Config
+from abc import abstractmethod
+from pynecone import ProtoShell, ProtoCmd, ModuleProvider
+
+
+class BrokerProvider(ModuleProvider):
+
+    @abstractmethod
+    def get_topic(self, name):
+        pass
 
 
 class Broker(ProtoShell):
@@ -38,3 +45,9 @@ class Broker(ProtoShell):
 
     def __init__(self):
         super().__init__('broker', [Broker.Create(), Broker.List(), Broker.Delete(), Broker.Get()], 'broker shell')
+
+
+class Module(ModuleProvider):
+
+    def get_instance(self, **kwargs):
+        return Broker()

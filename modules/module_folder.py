@@ -1,5 +1,44 @@
-from .proto import ProtoShell, ProtoCmd
-from .config import Config
+from abc import abstractmethod
+from pynecone import ModuleProvider, ProtoShell, ProtoCmd, Config
+
+
+class FolderProvider(ModuleProvider):
+
+    @abstractmethod
+    def get_name(self):
+        pass
+
+    @abstractmethod
+    def get_path(self):
+        pass
+
+    @abstractmethod
+    def is_folder(self):
+        pass
+
+    @abstractmethod
+    def get_children(self):
+        pass
+
+    @abstractmethod
+    def get_stat(self):
+        pass
+
+    @abstractmethod
+    def get_hash(self):
+        pass
+
+    @abstractmethod
+    def create_folder(self, name):
+        pass
+
+    @abstractmethod
+    def create_file(self, name, data):
+        pass
+
+    @abstractmethod
+    def delete(self, name):
+        pass
 
 
 class Folder(ProtoShell):
@@ -15,10 +54,7 @@ class Folder(ProtoShell):
             parser.add_argument('target_path', help="specifies the target_path")
 
         def run(self, args):
-            config = Config.init()
-            source_folder = config.get_folder(args.source_path)
-            target_folder = config.get_folder(args.target_path)
-            source_folder.copy(target_folder)
+            Folder.from_path(args.source_path).copy(Folder.from_path(args.target_path))
 
     class Get(ProtoCmd):
 
@@ -31,10 +67,7 @@ class Folder(ProtoShell):
             parser.add_argument('--local_path', help="specifies the local path where to save", default='.')
 
         def run(self, args):
-            config = Config.init()
-            folder = config.get_folder(args.path)
-            local_path = config.get_folder(args.local_path)
-            folder.get(local_path)
+            Folder.from_path(args.path).get(args.local_path)
 
     class Put(ProtoCmd):
 
@@ -46,12 +79,8 @@ class Folder(ProtoShell):
             parser.add_argument('local_path', help="specifies the local path to upload")
             parser.add_argument('target_path', help="specifies the target path")
 
-
         def run(self, args):
-            config = Config.init()
-            folder = config.get_folder(args.path)
-            local_path = config.get_folder(args.local_path)
-            folder.get(local_path)
+            Folder.from_path(args.target_path).put(args.local_path)
 
     class Delete(ProtoCmd):
 
@@ -63,7 +92,7 @@ class Folder(ProtoShell):
             parser.add_argument('path', help="specifies the path to be deleted")
 
         def run(self, args):
-            print(Config.init().get_folder(args.path).delete())
+            Folder.from_path(args.path).delete()
 
     class List(ProtoCmd):
 
@@ -77,7 +106,8 @@ class Folder(ProtoShell):
         def run(self, args):
             if args.path:
                 if args.path:
-                    folder = Config.init().get_folder(args.path)
+
+                    folder = Folder.from_path(args.path)
                     for c in folder.get_children():
                         print(c.get_name())
                 else:
@@ -97,13 +127,21 @@ class Folder(ProtoShell):
             parser.add_argument('path', help="specifies the path to be deleted")
 
         def run(self, args):
-            print(Config.init().get_folder(args.path).hash())
+            print(Folder.from_path(args.path).hash())
 
     def __init__(self):
         super().__init__('folder', [Folder.Copy(), Folder.Get(), Folder.Put(), Folder.Delete(), Folder.List(), Folder.Checksum()], 'folder shell')
 
-    def copy_to(self, target):
-        pass
+    @classmethod
+    def from_path(cls, path):
+        config = Config.init()
+        mount_path = '/{0}'.format(path.split('/')[1])
+        folder_path = '/'.join(path.split('/')[2:])
+        mount = config.get_entry_instance('mounts', mount_path)
+        return mount.get_folder(folder_path)
 
-    def get(self, local_path):
-        pass
+
+class Module(ModuleProvider):
+
+    def get_instance(self, **kwargs):
+        return Folder()

@@ -2,13 +2,12 @@ from .shell import Shell
 from .gen import Gen
 from .env import Env
 from .taskcmd import TaskCmd
-from .folder import Folder
-from .mount import Mount
 from .server import Server
-from .job import Job
 from .repl import Repl
 from .rest import Rest
+from .config import Config
 from .test import Test
+
 
 class Pynecone(Shell):
 
@@ -19,13 +18,10 @@ class Pynecone(Shell):
         return [Gen(),
                 Env(),
                 TaskCmd(),
-                Folder(),
-                Mount(),
                 Server(),
                 Test(),
-                Job(),
                 Repl(),
-                Rest()]
+                Rest()] + Config.init().list_commands()
 
     def add_arguments(self, parser):
         pass

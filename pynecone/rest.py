@@ -26,7 +26,7 @@ class RestCmd(ProtoCmd):
             'auth': None, 'timeout': self.get_config().get_timeout(), 'allow_redirects': True, 'proxies': None,
             'hooks': None, 'stream': None, 'verify': None, 'cert': None, 'json': None}
 
-        auth = Auth(self.get_config().get_api(api)['auth'])
+        auth = Auth(self.get_config().get_entry_cfg('apis', api))
         mode = auth.get_mode()
 
         if mode == AuthMode.CLIENT_KEY or mode == AuthMode.AUTH_URL:

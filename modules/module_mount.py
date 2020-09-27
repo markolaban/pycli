@@ -1,5 +1,12 @@
-from .proto import ProtoShell, ProtoCmd
-from .config import Config
+from abc import abstractmethod
+from pynecone import ModuleProvider, ProtoShell, ProtoCmd, Config
+
+
+class MountProvider(ModuleProvider):
+
+    @abstractmethod
+    def get_folder(self, path):
+        pass
 
 
 class Mount(ProtoShell):
@@ -63,3 +70,15 @@ class Mount(ProtoShell):
 
     def __init__(self):
         super().__init__('mount', [Mount.Create(), Mount.List(), Mount.Delete(), Mount.Get()], 'mount shell')
+
+    @classmethod
+    def from_path(cls, path):
+        config = Config.init()
+        mount_path = '/{0}'.format(path.split('/')[1])
+        return config.get_entry_instance('mounts', mount_path)
+
+
+class Module(ModuleProvider):
+
+    def get_instance(self, **kwargs):
+        return Mount()

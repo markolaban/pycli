@@ -165,7 +165,7 @@ class Api(ProtoShell):
             parser.add_argument('name', help="specifies the api name")
 
         def run(self, args):
-            print(yaml.dump(Config.init().get_entry_cfg('apis', args.name, True)
+            print(yaml.dump(Config.init().get_entry_cfg('apis', args.name, True)))
 
     class Delete(ProtoCmd):
 

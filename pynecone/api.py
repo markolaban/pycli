@@ -21,15 +21,11 @@ class Api(ProtoShell):
                 parser.add_argument('basic_use_digest', help="specifies whether to use digest")
 
             def run(self, args):
-                res = Config.init().modify_api_auth(args.name,
-                                                    'BASIC',
-                                                    basic_username=args.basic_username,
-                                                    basic_password=args.basic_password,
-                                                    basic_use_digest=args.basic_use_digest)
-                if res:
-                    return res
-                else:
-                    print('Unable to modify authentication parameters for API {0}'.format(args.name))
+                cfg = Config.init()
+                cfg.put_entry_value('apis', args.name, 'auth_mode', 'BASIC')
+                cfg.put_entry_value('basic_username', args.name, 'basic_username', args.basic_username)
+                cfg.put_entry_value('basic_password', args.name, 'basic_password', args.basic_password)
+                cfg.put_entry_value('basic_use_digest', args.name, 'basic_use_digest', args.basic_use_digest)
 
         class Cert(ProtoCmd):
 
@@ -44,15 +40,11 @@ class Api(ProtoShell):
                 parser.add_argument('ca_bundle', help=" the path to the certificate authority file")
 
             def run(self, args):
-                res = Config.init().modify_api_auth(args.name,
-                                                    'CLIENT_CERT',
-                                                    client_cert=args.client_cert,
-                                                    client_cert_key=args.client_cert_key,
-                                                    ca_bundle=args.ca_bundle)
-                if res:
-                    return res
-                else:
-                    print('Unable to modify authentication parameters for API {0}'.format(args.name))
+                cfg = Config.init()
+                cfg.put_entry_value('apis', args.name, 'auth_mode', 'CLIENT_CERT')
+                cfg.put_entry_value('client_cert', args.name, 'client_cert', args.client_cert)
+                cfg.put_entry_value('client_cert_key', args.name, 'client_cert_key', args.client_cert_key)
+                cfg.put_entry_value('ca_bundle', args.name, 'ca_bundle', args.ca_bundle)
 
         class NoAuth(ProtoCmd):
 
@@ -64,12 +56,8 @@ class Api(ProtoShell):
                 parser.add_argument('name', help="specifies the api name")
 
             def run(self, args):
-                res = Config.init().modify_api_auth(args.name,
-                                                    'NONE')
-                if res:
-                    return res
-                else:
-                    print('Unable to modify authentication parameters for API {0}'.format(args.name))
+                cfg = Config.init()
+                cfg.put_entry_value('apis', args.name, 'auth_mode', 'NONE')
 
         class Secret(ProtoCmd):
 
@@ -84,15 +72,11 @@ class Api(ProtoShell):
                 parser.add_argument('token_url', help="specifies the token url")
 
             def run(self, args):
-                res = Config.init().modify_api_auth(args.name,
-                                                    'CLIENT_KEY',
-                                                    client_key=args.client_key,
-                                                    client_secret=args.client_secret,
-                                                    token_url=args.token_url)
-                if res:
-                    return res
-                else:
-                    print('Unable to modify authentication parameters for API {0}'.format(args.name))
+                cfg = Config.init()
+                cfg.put_entry_value('apis', args.name, 'auth_mode', 'CLIENT_KEY')
+                cfg.put_entry_value('client_key', args.name, 'client_key', args.client_key)
+                cfg.put_entry_value('client_secret', args.name, 'client_secret', args.client_secret)
+                cfg.put_entry_value('token_url', args.name, 'token_url', args.token_url)
 
         class User(ProtoCmd):
 
@@ -106,34 +90,17 @@ class Api(ProtoShell):
                 parser.add_argument('auth_url', help="specifies the auth url")
 
             def run(self, args):
-                res = Config.init().modify_api_auth(args.name,
-                                                    'AUTH_URL',
-                                                    callback_url=args.callback_url,
-                                                    auth_url=args.auth_url)
-                if res:
-                    return res
-                else:
-                    print('Unable to modify authentication parameters for API {0}'.format(args.name))
-
-        class Get(ProtoCmd):
-
-            def __init__(self):
-                super().__init__('get',
-                                 'get api authentication info')
-
-            def add_arguments(self, parser):
-                parser.add_argument('name', help="specifies the api name")
-
-            def run(self, args):
-                print(yaml.dump(Config.init().get_api(args.name)['auth']))
+                cfg = Config.init()
+                cfg.put_entry_value('apis', args.name, 'auth_mode', 'AUTH_URL')
+                cfg.put_entry_value('auth_url', args.name, 'auth_url', args.auth_url)
+                cfg.put_entry_value('callback_url', args.name, 'callback_url', args.callback_url)
 
         def __init__(self):
             super().__init__('auth', [Api.Auth.NoAuth(),
                                       Api.Auth.Basic(),
                                       Api.Auth.Cert(),
                                       Api.Auth.Secret(),
-                                      Api.Auth.User(),
-                                      Api.Auth.Get()], 'manage authentication')
+                                      Api.Auth.User()], 'manage authentication')
 
     class Url(ProtoShell):
 
@@ -147,7 +114,7 @@ class Api(ProtoShell):
                 parser.add_argument('name', help="specifies the api name")
 
             def run(self, args):
-                print(Config.init().get_api(args.name)['url'])
+                print(Config.init().get_entry_value('apis', args.name, 'url'))
 
         class Set(ProtoCmd):
 
@@ -160,7 +127,7 @@ class Api(ProtoShell):
                 parser.add_argument('url', help="specifies the url of the API")
 
             def run(self, args):
-                res = Config.init().modify_api_url(args.name, args.url)
+                res = Config.init().put_entry_value('apis', args.name, 'url', args.url)
                 if res:
                     return res
                 else:
@@ -182,11 +149,23 @@ class Api(ProtoShell):
             parser.add_argument('url', help="specifies the url of the API")
 
         def run(self, args):
-            api = Config.init().create_api(args.name, args.url)
+            api = Config.init().create_entry('apis', args.name, {'auth_mode': 'NONE', 'url': args.url})
             if api:
                 print('API {0} created'.format(args.name))
             else:
                 print('API {0} already exists'.format(args.name))
+
+    class Get(ProtoCmd):
+
+        def __init__(self):
+            super().__init__('get',
+                             'get api info')
+
+        def add_arguments(self, parser):
+            parser.add_argument('name', help="specifies the api name")
+
+        def run(self, args):
+            print(yaml.dump(Config.init().get_entry_cfg('apis', args.name, True)
 
     class Delete(ProtoCmd):
 
@@ -198,7 +177,7 @@ class Api(ProtoShell):
             parser.add_argument('name', help="specifies the name of the API")
 
         def run(self, args):
-            res = Config.init().delete_api(args.name)
+            res = Config.init().delete_entry('apis', args.name)
             if res:
                 return res
             else:
@@ -211,7 +190,7 @@ class Api(ProtoShell):
                              'list APIs')
 
         def run(self, args):
-            print(Config.init().list_api())
+            print(Config.init().list_entries('apis'))
 
     def __init__(self):
         super().__init__('api',

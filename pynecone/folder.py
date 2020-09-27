@@ -1,9 +1,6 @@
 from .proto import ProtoShell, ProtoCmd
 from .config import Config
 
-from os import listdir
-from os.path import isfile, isdir, join
-
 
 class Folder(ProtoShell):
 

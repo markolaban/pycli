@@ -15,7 +15,7 @@ from .config import Config
 class RestCmd(ProtoCmd):
 
     def get_endpoint_url(self, api, path):
-        return urljoin(self.get_config().get_api(api)['url'], path)
+        return urljoin(self.get_config().get_entry_value('apis', api, 'url'), path)
 
     def dump(self, response):
         data = dump.dump_all(response)

@@ -1,5 +1,7 @@
+from pynecone import ProtoCmd
 import yaml
 import os
+import sys
 
 import importlib
 import pkgutil
@@ -12,10 +14,17 @@ def iter_namespace(ns_pkg):
     # the name.
     return pkgutil.iter_modules(ns_pkg.__path__, ns_pkg.__name__ + ".")
 
+def get_config_name(cls):
+        main = sys.modules['__main__']
+        if hasattr(main, '__file__'):
+            print(os.path.splitext(main.__file__)[0])
+        else:
+            print(__name__)
 
 class Config:
 
-    def __init__(self, name, path):
+    def __init__(self, name='{0}.yml'.format(get_config_name()), path=os.getcwd()):
+        super().__init__('env', 'manage environment')
         self.path = path
         self.full_path = os.path.join(path, name)
         self.data = {}
@@ -32,10 +41,7 @@ class Config:
 
     def get_blank_environment(self, name):
         return {
-            'name': name,
-            'apis': [],
-            # 'database': {'url': 'sqlite:///{0}'.format(os.path.join(self.path, 'pynecone.db'))},
-            # 'server': {'host': '0.0.0.0', 'port': '8080'}
+            'name': name
         }
 
     def create_environment(self, name):
@@ -109,204 +115,76 @@ class Config:
         else:
             return None
 
-    def create_api(self, name, url):
+    def create_entry(self, section, name, **kwargs):
         env = self.get_active_environment()
 
-        apis = env.get('apis')
+        entries = env.get(section)
 
-        if not apis:
-            apis = []
-            env['apis'] = apis
+        if not entries:
+            entries = []
+            env['entries'] = entries
 
-        if [api for api in apis if api['name'] == name]:
+        if [entry for entry in entries if entry['name'] == name]:
             return None
 
-        api = {'name': name, 'url': url, 'auth': {'method': 'NONE'}}
-        apis.append(api)
+        entry = dict(kwargs)
+        entry['name'] = name
+        entries.append(entry)
         self.save()
-        return api
+        return entry
 
-    def modify_api_auth(self, name, mode, **kwargs):
-        env = self.get_active_environment()
-
-        apis = env.get('apis')
-
-        if not apis:
-            return None
-
-        found = [api for api in apis if api['name'] == name]
-
-        if found:
-            api = found[0]
+    def get_entry_cfg(self, section, name, outputYaml=False):
+        entry = [entry for entry in self.list_entries(section) if entry['name'] == name]
+        if entry:
+            return yaml.dump(entry[0]) if outputYaml else entry[0]
         else:
             return None
 
-        if mode == 'BASIC':
-            auth = {
-                'mode': 'BASIC',
-                'basic_username': kwargs['basic_username'],
-                'basic_password': kwargs['basic_password'],
-                'basic_use_digest': kwargs['basic_use_digest']
-            }
-        elif mode == 'CLIENT_CERT':
-            auth = {
-                'mode': 'CLIENT_CERT',
-                'client_cert': kwargs['client_cert'],
-                'client_cert_key': kwargs['client_cert_key'],
-                'ca_bundle': kwargs['ca_bundle']
-            }
-        elif mode == 'CLIENT_KEY':
-            auth = {
-                'mode': 'CLIENT_KEY',
-                'client_key': kwargs['client_key'],
-                'client_secret': kwargs['client_secret'],
-                'token_url': kwargs['token_url']
-            }
-        elif mode == 'AUTH_URL':
-            auth = {
-                'mode': 'AUTH_URL',
-                'callback_url': kwargs['callback_url'],
-                'auth_url': kwargs['auth_url']
-            }
-        else:
-            auth = {'mode': 'NONE'}
-
-        api['auth'] = auth
+    def put_entry_cfg(self, section, name, outputYaml=False, **kwargs):
+        entries = [entry for entry in self.list_entries(section) if entry['name'] != name]
+        entry = dict(kwargs)
+        entry['name'] = name
+        entries.append(entry)
         self.save()
-        return auth
+        return yaml.dump(entry) if outputYaml else entry
 
-    def list_api(self):
-        env = self.get_active_environment()
-        return [api for api in env['apis']]
-
-    def get_active_api(self):
-        return [api for api in self.list_api()][0]
-
-    def get_api(self, name, outputYaml=False):
-        api = [api for api in self.list_api() if api['name'] == name]
-        if api:
-            return yaml.dump(api[0]) if outputYaml else api[0]
+    def put_entry_value(self, section, name, key, value):
+        entry = [entry for entry in self.list_entries(section) if entry['name'] == name]
+        if entry:
+            entry[0]['key'] = value
         else:
-            return None
-
-    def delete_api(self, name):
-        env = self.get_active_environment()
-        found = [api for api in env['apis'] if api['name'] == name]
-
-        if found:
-            env['apis'] = [i for i in env['apis'] if i['name'] != name]
-            self.save()
-            return name
-        else:
-            return None
-
-    def create_mount(self, name, mount):
-        env = self.get_active_environment()
-
-        mounts = env.get('mounts')
-
-        if not mounts:
-            mounts = []
-            env['mounts'] = mounts
-
-        if [mount for mount in mounts if mount['name'] == name]:
-            return None
-
-        mount = {'name': name, 'mount': mount }
-        mounts.append(mount)
+            entries = self.list_entries(section)
+            entry = {'name': name, key: value}
+            entries.append(entry)
         self.save()
-        return mount
 
-    def get_mount_cfg(self, name, outputYaml=False):
-        mount = [mount for mount in self.list_mount() if mount['name'] == name]
-        if mount:
-            return yaml.dump(mount[0]) if outputYaml else mount[0]
-        else:
-            return None
+    def get_entry_value(self, section, name, key, default=None):
+        entry = [entry for entry in self.list_entries(section) if entry['name'] == name]
+        return entry.get(key, default)
 
-
-    def get_mount(self, name):
-        cfg = self.get_mount_cfg(name)
+    def get_entry_instance(self, section, name):
+        cfg = self.get_entry_cfg(section, name)
         if cfg:
-            mount_mods = [m.split('_')[1] for m in self.modules if m.startswith('modules.mount_')]
-            mount_mod = [m for m in mount_mods if m == cfg['mount']['type']]
-            mod_cfg = dict(cfg['mount'])
+            entry_mods = [m.split('_')[1] for m in self.modules if m.startswith('modules.{0}_'.format(section))]
+            entry_mod = [m for m in entry_mods if m == cfg['type']]
+            mod_cfg = dict(cfg['data'])
             mod_cfg['name'] = name
-            return getattr(importlib.import_module('modules.mount_{0}'.format(mount_mod[0])), 'Module')(**mod_cfg)
+            mod_cfg['type'] = cfg['type']
+            return getattr(importlib.import_module('modules.{0}_{1}'.format(entry_mod[0])), 'Module')(**mod_cfg)
         else:
             return None
 
-    def get_folder(self, path):
-        mount_path = '/{0}'.format(path.split('/')[1])
-        target_path = '/'.join(path.split('/')[2:])
-        return self.get_mount(mount_path).get_folder(target_path)
-
-    def list_mount(self):
+    def list_entries(self, section):
         env = self.get_active_environment()
-        return [mount for mount in env['mounts']]
+        entries = env.get(section)
+        return entries if entries else []
 
-    def delete_mount(self, name):
+    def delete_entry(self, section, name):
         env = self.get_active_environment()
-        found = [mount for mount in env['mounts'] if mount['name'] == name]
+        found = [entry for entry in env[section] if entry['name'] == name]
 
         if found:
-            env['mounts'] = [i for i in env['mounts'] if i['name'] != name]
-            self.save()
-            return name
-        else:
-            return None
-
-    def create_broker(self, name, broker):
-        env = self.get_active_environment()
-
-        brokers = env.get('brokers')
-
-        if not brokers:
-            brokers = []
-            env['brokers'] = brokers
-
-        if [broker for broker in brokers if broker['name'] == name]:
-            return None
-
-        broker = {'name': name, 'broker': broker }
-        brokers.append(broker)
-        self.save()
-        return broker
-
-    def get_broker_cfg(self, name, outputYaml=False):
-        broker = [broker for broker in self.list_broker() if broker['name'] == name]
-        if broker:
-            return yaml.dump(broker[0]) if outputYaml else broker[0]
-        else:
-            return None
-
-
-    def get_broker(self, name):
-        cfg = self.get_broker_cfg(name)
-        if cfg:
-            broker_mods = [m.split('_')[1] for m in self.modules if m.startswith('modules.broker_')]
-            broker_mod = [m for m in broker_mods if m == cfg['broker']['type']]
-            mod_cfg = dict(cfg['broker'])
-            mod_cfg['name'] = name
-            return getattr(importlib.import_module('modules.broker_{0}'.format(broker_mod[0])), 'Module')(**mod_cfg)
-        else:
-            return None
-
-    def get_topic(self, path):
-        broker_path = '/{0}'.format(path.split('/')[1])
-        target_path = '/'.join(path.split('/')[2:])
-        return self.get_broker(broker_path).get_topic(target_path)
-
-    def list_broker(self):
-        env = self.get_active_environment()
-        return [broker for broker in env['brokers']]
-
-    def delete_broker(self, name):
-        env = self.get_active_environment()
-        found = [broker for broker in env['brokers'] if broker['name'] == name]
-
-        if found:
-            env['brokers'] = [i for i in env['brokers'] if i['name'] != name]
+            env[section] = [i for i in env[section] if i['name'] != name]
             self.save()
             return name
         else:
@@ -314,26 +192,6 @@ class Config:
 
     def get_timeout(self):
         return 20
-
-    def modify_api_url(self, name, url):
-        env = self.get_active_environment()
-
-        apis = env.get('apis')
-
-        if not apis:
-            return None
-
-        found = [api for api in apis if api['name'] == name]
-
-        if found:
-            api = found[0]
-        else:
-            return None
-
-        api['url'] = url
-
-        self.save()
-        return api
 
     def get_active_environment_name(self):
         self.generate()
@@ -352,17 +210,9 @@ class Config:
 
             self.save()
 
-    def get_database_url(self):
-        return self.data['database']['url']
-
-    def get_server_host(self):
-        return self.data['server']['host']
-
-    def get_server_port(self):
-        return self.data['server']['port']
 
     @classmethod
-    def init(cls, name='pynecone.yml', path=os.getcwd()):
+    def init(cls, name='{0}.yml'.format(get_config_name()), path=os.getcwd()):
         cfg = Config(name, path)
 
         if not os.path.exists(cfg.full_path):

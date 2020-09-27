@@ -1,14 +1,13 @@
-from .cmd import *
-from .shell import *
-from .auth import *
 from .api import *
-from .taskcmd import *
-from .rest import *
-from .module import *
+from .auth import *
+from .cmd import *
 from .config import *
+from .module import *
 from .proto import *
+from .rest import *
+from .shell import *
+from .taskcmd import *
 from .test import *
 
-
-__version__ = "0.0.44"
+__version__ = "0.0.45"
 

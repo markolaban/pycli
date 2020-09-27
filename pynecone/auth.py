@@ -44,7 +44,7 @@ class AuthMode(str, Enum):
 class AuthCfg:
 
     def __init__(self,
-                 mode='NONE',
+                 auth_mode='NONE',
                  auth_url=os.getenv('AUTH_URL'),
                  callback_url=os.getenv('CALLBACK_URL', 'http://localhost:8080'),
                  client_id=os.getenv('CLIENT_ID'),
@@ -78,7 +78,7 @@ class AuthCfg:
         :param timeout:
         '''
 
-        self.mode = mode
+        self.auth_mode = auth_mode
         self.auth_url = auth_url
         self.callback_url = callback_url
         self.client_id = client_id

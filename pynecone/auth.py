@@ -58,7 +58,9 @@ class AuthCfg:
                  basic_password=os.getenv('BASIC_PASSWORD'),
                  basic_use_digest=os.getenv('BASIC_USE_DIGEST', False),
                  debug=os.getenv('DEBUG', False),
-                 timeout=os.getenv('TIMEOUT', 10)):
+                 timeout=os.getenv('TIMEOUT', 10),
+                 name=None,
+                 url=None):
 
         '''
         :param api_base_url:

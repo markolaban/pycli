@@ -27,6 +27,13 @@ class Folder(FolderProvider):
             for f in os.listdir(self.path):
                 yield Folder(self.mount, '{0}/{1}'.format(self.path, f))
 
+    def get_child(self, name):
+        if os.path.isdir(self.path):
+            for f in os.listdir(self.path):
+                if name == f:
+                    return Folder(self.mount, '{0}/{1}'.format(self.path, f))
+        return None
+
     def get_hash(self):
         if os.path.isfile(self.path):
             with open(self.path, "rb") as f:

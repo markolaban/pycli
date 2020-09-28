@@ -15,5 +15,5 @@ from .mount import *
 from .task import *
 from .topic import *
 
-__version__ = "0.0.59"
+__version__ = "0.0.60"
 

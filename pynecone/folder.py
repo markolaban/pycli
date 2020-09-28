@@ -23,6 +23,10 @@ class FolderProvider(ModuleProvider):
         pass
 
     @abstractmethod
+    def get_child(self, name):
+        pass
+
+    @abstractmethod
     def get_stat(self):
         pass
 

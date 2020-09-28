@@ -4,7 +4,7 @@ import sys
 
 import importlib
 import pkgutil
-import modules
+import pynecone.modules
 
 
 def iter_namespace(ns_pkg):
@@ -29,7 +29,7 @@ class Config:
         self.path = path
         self.full_path = os.path.join(path, name)
         self.data = {}
-        self.modules = [name for _, name, _ in iter_namespace(modules)]
+        self.modules = [name for _, name, _ in iter_namespace(pynecone.modules)]
 
 
     def load(self):

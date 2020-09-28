@@ -35,7 +35,11 @@ class FolderProvider(ModuleProvider):
         pass
 
     @abstractmethod
-    def create_file(self, name, data):
+    def create_file(self, name, data, binary=True):
+        pass
+
+    @abstractmethod
+    def get_data(self, binary=True):
         pass
 
     @abstractmethod
@@ -159,3 +163,17 @@ class Folder(ProtoShell):
         folder_path = '/'.join(path.split('/')[2:])
         mount = config.get_entry_instance('mounts', mount_path)
         return mount.get_folder(folder_path)
+
+    @classmethod
+    def copy(cls, source, dest):
+        if source.is_folder():
+            children = source.get_children()
+
+            for file in [c for c in children if not c.is_folder()]:
+                dest.create_file(file.get_name(), file.get_data())
+
+            for folder in [c for c in children if c.is_folder()]:
+                target_folder = dest.create_folder(folder.get_name())
+                Folder.copy(folder, target_folder)
+        else:
+            dest.create_file(source.get_name(), source.get_data())

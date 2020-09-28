@@ -64,6 +64,10 @@ class Folder(FolderProvider):
         else:
             return None
 
+    def get_data(self, binary=True):
+        with open(self.path, 'rb' if binary else 'r') as f:
+            return f.read()
+
     def delete(self):
         if self.is_folder():
             os.rmdir(self.path)

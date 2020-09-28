@@ -177,3 +177,7 @@ class Folder(ProtoShell):
                 Folder.copy(folder, target_folder)
         else:
             dest.create_file(source.get_name(), source.get_data())
+
+    @classmethod
+    def match(cls, source, dest):
+        return source.get_hash() == dest.get_hash()

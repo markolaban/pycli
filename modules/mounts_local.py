@@ -37,11 +37,13 @@ class Folder(FolderProvider):
                         break
                     else:
                         file_hash.update(data)
+                file_hash.update(self.path.split('/')[-1])
                 return file_hash.hexdigest()
         else:
             folder_hash = hashlib.md5()
             for c in self.get_children():
                 folder_hash.update(c.get_hash())
+            folder_hash.update(self.path.split('/')[-1])
             return folder_hash
 
     def get_stat(self):

@@ -167,14 +167,14 @@ class Folder(ProtoShell):
     @classmethod
     def copy(cls, source, dest):
         if source.is_folder():
+            target = dest.create_folder(source.get_name())
             children = source.get_children()
 
             for file in [c for c in children if not c.is_folder()]:
-                dest.create_file(file.get_name(), file.get_data())
+                target.create_file(file.get_name(), file.get_data())
 
             for folder in [c for c in children if c.is_folder()]:
-                target_folder = dest.create_folder(folder.get_name())
-                Folder.copy(folder, target_folder)
+                Folder.copy(folder, target)
         else:
             dest.create_file(source.get_name(), source.get_data())
 

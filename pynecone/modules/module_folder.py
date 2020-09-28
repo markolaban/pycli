@@ -1,5 +1,7 @@
 from abc import abstractmethod
-from ...pynecone import ModuleProvider, ProtoShell, ProtoCmd, Config
+from ..module import ModuleProvider
+from ..proto import ProtoShell, ProtoCmd
+from ..config import Config
 
 
 class FolderProvider(ModuleProvider):

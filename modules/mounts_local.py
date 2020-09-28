@@ -42,9 +42,9 @@ class Folder(FolderProvider):
         else:
             folder_hash = hashlib.md5()
             for c in self.get_children():
-                folder_hash.update(c.get_hash())
+                folder_hash.update(c.get_hash().encode('utf-8'))
             folder_hash.update(self.path.split('/')[-1].encode('utf-8'))
-            return folder_hash
+            return folder_hash.hexdigest()
 
     def get_stat(self):
         return os.stat(self.path)

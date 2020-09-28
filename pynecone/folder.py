@@ -1,7 +1,7 @@
 from abc import abstractmethod
-from ..module import ModuleProvider
-from ..proto import ProtoShell, ProtoCmd
-from ..config import Config
+from .module import ModuleProvider
+from .proto import ProtoShell, ProtoCmd
+from .config import Config
 
 
 class FolderProvider(ModuleProvider):
@@ -131,10 +131,10 @@ class Folder(ProtoShell):
                     for c in folder.get_children():
                         print(c.get_name())
                 else:
-                    for mount in Config.init().list_mount():
+                    for mount in Config.init().list_entries('mounts'):
                         print(mount['name'])
             else:
-                for mount in Config.init().list_mount():
+                for mount in Config.init().list_entries('mounts'):
                     print(mount['name'])
 
     class Checksum(ProtoCmd):
@@ -159,9 +159,3 @@ class Folder(ProtoShell):
         folder_path = '/'.join(path.split('/')[2:])
         mount = config.get_entry_instance('mounts', mount_path)
         return mount.get_folder(folder_path)
-
-
-class Module(ModuleProvider):
-
-    def get_instance(self, **kwargs):
-        return Folder()

@@ -46,8 +46,3 @@ class Broker(ProtoShell):
     def __init__(self):
         super().__init__('broker', [Broker.Create(), Broker.List(), Broker.Delete(), Broker.Get()], 'broker shell')
 
-
-class Module(ModuleProvider):
-
-    def get_instance(self, **kwargs):
-        return Broker()

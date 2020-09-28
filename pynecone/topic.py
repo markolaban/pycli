@@ -1,7 +1,5 @@
 from abc import abstractmethod
-from pynecone import ModuleProvider, ProtoShell, ProtoCmd
-
-
+from pynecone import ModuleProvider, ProtoShell
 
 
 class TopicProvider(ModuleProvider):
@@ -40,9 +38,3 @@ class Topic(ProtoShell):
 
     def __init__(self):
         super().__init__('topic', [], 'manage topics')
-
-
-class Module(ModuleProvider):
-
-    def get_instance(self, **kwargs):
-        return Topic()

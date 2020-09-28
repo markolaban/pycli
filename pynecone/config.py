@@ -4,14 +4,14 @@ import sys
 
 import importlib
 import pkgutil
-import pynecone.modules
-
+import modules
 
 def iter_namespace(ns_pkg):
     # Specifying the second argument (prefix) to iter_modules makes the
     # returned name an absolute name instead of a relative one. This allows
     # import_module to work without having to do additional modification to
     # the name.
+    # print(ns_pkg.__path__, ns_pkg.__name__)
     return pkgutil.iter_modules(ns_pkg.__path__, ns_pkg.__name__ + ".")
 
 
@@ -29,7 +29,7 @@ class Config:
         self.path = path
         self.full_path = os.path.join(path, name)
         self.data = {}
-        self.modules = [name for _, name, _ in iter_namespace(pynecone.modules)]
+        self.modules = [name for _, name, _ in iter_namespace(modules)]
 
 
     def load(self):

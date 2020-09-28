@@ -86,9 +86,3 @@ class Mount(ProtoShell):
         config = Config.init()
         mount_path = '/{0}'.format(path.split('/')[1])
         return config.get_entry_instance('mounts', mount_path)
-
-
-class Module(ModuleProvider):
-
-    def get_instance(self, **kwargs):
-        return Mount()

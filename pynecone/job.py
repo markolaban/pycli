@@ -13,9 +13,3 @@ class Job(ProtoShell):
 
     def __init__(self):
         super().__init__('job', [],  'manage jobs')
-
-
-class Module(ModuleProvider):
-
-    def get_instance(self, **kwargs):
-        return Job()

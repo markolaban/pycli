@@ -1,7 +1,11 @@
 from .shell import Shell
 from .gen import Gen
 from .env import Env
-from .taskcmd import TaskCmd
+from .broker import Broker
+from .folder import Folder
+from .job import Job
+from .task import Task
+from .topic import Topic
 from .server import Server
 from .repl import Repl
 from .api import Api
@@ -19,7 +23,11 @@ class Pynecone(Shell):
         return [Gen(),
                 Env(),
                 Api(),
-                TaskCmd(),
+                Broker(),
+                Folder(),
+                Job(),
+                Task(),
+                Topic(),
                 Server(),
                 Test(),
                 Repl(),

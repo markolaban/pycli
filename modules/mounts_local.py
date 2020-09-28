@@ -1,5 +1,4 @@
-from .module_mount import MountProvider
-from .module_folder import FolderProvider
+from pynecone import MountProvider, FolderProvider
 
 import os
 import hashlib

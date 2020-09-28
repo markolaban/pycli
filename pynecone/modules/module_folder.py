@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from pynecone import ModuleProvider, ProtoShell, ProtoCmd, Config
+from ...pynecone import ModuleProvider, ProtoShell, ProtoCmd, Config
 
 
 class FolderProvider(ModuleProvider):

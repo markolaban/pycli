@@ -60,7 +60,7 @@ class Folder(FolderProvider):
             target_path = '{0}/{1}'.format(self.path, name)
             with open(target_path, 'wb' if binary else 'w') as f:
                 f.write(data)
-            return Folder(self.mount)
+            return Folder(self.mount, target_path)
         else:
             return None
 

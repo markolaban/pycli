@@ -4,15 +4,6 @@ import sys
 
 import importlib
 import pkgutil
-import modules
-
-def iter_namespace(ns_pkg):
-    # Specifying the second argument (prefix) to iter_modules makes the
-    # returned name an absolute name instead of a relative one. This allows
-    # import_module to work without having to do additional modification to
-    # the name.
-    # print(ns_pkg.__path__, ns_pkg.__name__)
-    return pkgutil.iter_modules(ns_pkg.__path__, ns_pkg.__name__ + ".")
 
 
 def get_config_name():
@@ -29,8 +20,6 @@ class Config:
         self.path = path
         self.full_path = os.path.join(path, name)
         self.data = {}
-        self.modules = [name for _, name, _ in iter_namespace(modules)]
-
 
     def load(self):
         with open(self.full_path) as file:
@@ -168,13 +157,16 @@ class Config:
     def get_entry_instance(self, section, name):
         cfg = self.get_entry_cfg(section, name)
         if cfg:
-            entry_mods = [m.split('_')[1] for m in self.modules if m.startswith('modules.{0}_'.format(section))]
-            entry_mod = [m for m in entry_mods if m == cfg['type']]
-            mod_cfg = dict(cfg)
-            mod_cfg['name'] = name
-            return getattr(importlib.import_module('modules.{0}_{1}'.format(section, entry_mod[0])), 'Module')().get_instance(**mod_cfg)
-        else:
-            return None
+            for pkg in [pkg_name for _, pkg_name, _ in pkgutil.iter_modules() if pkg_name.endswith('_modules')]:
+                for _, mod, _ in pkgutil.iter_modules([pkg]):
+                    if mod.startswith('{0}_'.format(section)):
+                        if mod.endswith('_{0}'.format(cfg['type'])):
+                            print('*** loading module {0}.{1}'.format(pkg, mod))
+                            mod_cfg = dict(cfg)
+                            mod_cfg['name'] = name
+                            return getattr(importlib.import_module('{0}.{1}'.format(pkg, mod)),
+                                           'Module')().get_instance(**mod_cfg)
+        return None
 
     def list_entries(self, section):
         env = self.get_active_environment()
@@ -201,7 +193,8 @@ class Config:
             return None
 
     def list_commands(self):
-        env = self.get_active_environment()
+        return []
+        self.get_active_environment()
         entry_mods = [m.split('_')[1] for m in self.modules if m.startswith('modules.{0}_'.format('module'))]
         return [getattr(importlib.import_module('modules.{0}_{1}'.format('module', entry_mod)), 'Module')().get_instance() for entry_mod in entry_mods]
 

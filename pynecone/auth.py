@@ -273,7 +273,7 @@ class Auth:
         return httpServer.access_token
 
     def get_basic_token(self):
-        if self.basic_use_digest.lower() == 'true':
+        if str(self.basic_use_digest).lower() == 'true':
             return HTTPDigestAuth(self.basic_username, self.basic_password)
         else:
             return HTTPBasicAuth(self.basic_username, self.basic_password)

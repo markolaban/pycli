@@ -67,6 +67,7 @@ class Api(ProtoShell):
 
             def add_arguments(self, parser):
                 parser.add_argument('name', help="specifies the api name")
+                parser.add_argument('client_id', help="specifies the client id")
                 parser.add_argument('client_key', help="specifies the client key")
                 parser.add_argument('client_secret', help="specifies the client secret")
                 parser.add_argument('token_url', help="specifies the token url")
@@ -74,6 +75,7 @@ class Api(ProtoShell):
             def run(self, args):
                 cfg = Config.init()
                 cfg.put_entry_value('apis', args.name, 'auth_mode', 'CLIENT_KEY')
+                cfg.put_entry_value('apis', args.name, 'client_id', args.client_id)
                 cfg.put_entry_value('apis', args.name, 'client_key', args.client_key)
                 cfg.put_entry_value('apis', args.name, 'client_secret', args.client_secret)
                 cfg.put_entry_value('apis', args.name, 'token_url', args.token_url)

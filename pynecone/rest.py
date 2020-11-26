@@ -29,8 +29,11 @@ class RestCmd(ProtoCmd):
         auth = Auth(self.get_config().get_entry_cfg('apis', api))
         mode = auth.get_mode()
 
-        if mode == AuthMode.CLIENT_KEY or mode == AuthMode.AUTH_URL:
+        if mode == AuthMode.AUTH_URL:
             token = auth.retrieve_token()
+            arguments['headers'] = {"Authorization": "Bearer " + token}
+        elif mode == AuthMode.CLIENT_KEY:
+            token = auth.get_api_token()
             arguments['headers'] = {"Authorization": "Bearer " + token}
         elif mode == AuthMode.CLIENT_CERT:
             arguments['cert'] = (auth.client_cert, auth.client_cert_key)

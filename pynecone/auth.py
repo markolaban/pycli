@@ -188,7 +188,7 @@ class Auth:
     def get_mode(self):
         if self.client_cert and self.client_cert_key:
             return AuthMode.CLIENT_CERT
-        elif self.client_key and self.client_cert_key:
+        elif self.client_key and self.client_secret and self.token_url:
             return AuthMode.CLIENT_KEY
         elif self.auth_url and self.callback_url:
             return AuthMode.AUTH_URL

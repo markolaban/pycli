@@ -4,6 +4,7 @@ from .auth import Auth, AuthMode
 
 import requests
 import json
+import certifi
 
 from requests_toolbelt.utils import dump
 
@@ -24,7 +25,7 @@ class RestCmd(ProtoCmd):
     def get_arguments(self, api):
         arguments = {'headers': None, 'cookies': None,
             'auth': None, 'timeout': self.get_config().get_timeout(), 'allow_redirects': True, 'proxies': None,
-            'hooks': None, 'stream': None, 'verify': None, 'cert': None, 'json': None}
+            'hooks': None, 'stream': None, 'verify': certifi.where(), 'cert': None, 'json': None}
 
         auth = Auth(self.get_config().get_entry_cfg('apis', api))
         mode = auth.get_mode()

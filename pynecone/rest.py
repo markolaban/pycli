@@ -25,10 +25,12 @@ class RestCmd(ProtoCmd):
     def get_arguments(self, api):
         arguments = {'headers': None, 'cookies': None,
             'auth': None, 'timeout': self.get_config().get_timeout(), 'allow_redirects': True, 'proxies': None,
-            'hooks': None, 'stream': None, 'verify': certifi.where(), 'cert': None, 'json': None}
+            'hooks': None, 'stream': None, 'cert': None, 'json': None}
 
         auth = Auth(self.get_config().get_entry_cfg('apis', api))
         mode = auth.get_mode()
+        arguments['verify'] = auth.ca_bundle
+        print('verify argument is: ', arguments['verify'])
 
         if mode == AuthMode.AUTH_URL:
             token = auth.retrieve_token()

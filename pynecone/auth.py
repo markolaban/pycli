@@ -6,6 +6,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from requests.auth import HTTPBasicAuth, HTTPDigestAuth
 from urllib.parse import parse_qs
 from webbrowser import open_new
+import certifi
 
 from enum import Enum
 
@@ -53,7 +54,7 @@ class AuthCfg:
                  token_url=os.getenv('TOKEN_URL'),
                  client_cert=os.getenv('CLIENT_CERT'),
                  client_cert_key=os.getenv('CLIENT_CERT_KEY'),
-                 ca_bundle=os.getenv('CA_BUNDLE'),
+                 ca_bundle=os.getenv('CA_BUNDLE', certifi.where()),
                  basic_username=os.getenv('BASIC_USERNAME'),
                  basic_password=os.getenv('BASIC_PASSWORD'),
                  basic_use_digest=os.getenv('BASIC_USE_DIGEST', False),

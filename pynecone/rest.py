@@ -24,12 +24,13 @@ class RestCmd(ProtoCmd):
 
     def get_arguments(self, api):
         arguments = {'headers': None, 'cookies': None,
-            'auth': None, 'timeout': self.get_config().get_timeout(), 'allow_redirects': True, 'proxies': None,
+            'auth': None, 'timeout': self.get_config().get_entry_value('apis', api, 'timeout', 20), 'allow_redirects': True, 'proxies': None,
             'hooks': None, 'stream': None, 'cert': None, 'json': None}
 
         auth = Auth(self.get_config().get_entry_cfg('apis', api))
         mode = auth.get_mode()
         arguments['verify'] = auth.ca_bundle
+        print('timeout argument is: ', arguments['timeout'])
         print('verify argument is: ', arguments['verify'])
 
         if mode == AuthMode.AUTH_URL:

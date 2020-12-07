@@ -4,6 +4,7 @@ from .env import Env
 from .broker import Broker
 from .folder import Folder
 from .job import Job
+from .mount import Mount
 from .task import Task
 from .topic import Topic
 from .server import Server
@@ -26,6 +27,7 @@ class Pynecone(Shell):
                 Broker(),
                 Folder(),
                 Job(),
+                Mount(),
                 Task(),
                 Topic(),
                 Server(),

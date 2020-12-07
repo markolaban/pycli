@@ -158,7 +158,7 @@ class Config:
         cfg = self.get_entry_cfg(section, name)
         if cfg:
             for pkg in [pkg_name for _, pkg_name, _ in pkgutil.iter_modules() if pkg_name.endswith('_modules')]:
-                for _, mod, _ in pkgutil.iter_modules([pkg]):
+                for _, mod, _ in pkgutil.iter_modules([importlib.import_module(pkg).__path__[0]]):
                     if mod.startswith('{0}_'.format(section)):
                         if mod.endswith('_{0}'.format(cfg['type'])):
                             print('*** loading module {0}.{1}'.format(pkg, mod))

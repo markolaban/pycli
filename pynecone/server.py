@@ -1,16 +1,28 @@
-from pynecone import Shell
+import importlib
+import pkgutil
 
-class Server(Shell):
+from pynecone import ProtoCmd
 
-        def __init__(self):
-            super().__init__('server')
+from flask import Flask
+app = Flask('pynecone')
 
-        def get_commands(self):
-            return [
-            ]
+class Server(ProtoCmd):
 
-        def add_arguments(self, parser):
-            pass
+    def __init__(self):
+        super().__init__('server',
+                         'start server')
 
-        def get_help(self):
-            return 'Server shell'
+    def add_arguments(self, parser):
+        pass #parser.add_argument('name', help="specifies the name of the component to be retrieved")
+
+    def run(self, args):
+        print('starting server')
+        module = importlib.import_module('components')
+        for pkg in [pkg_name for _, pkg_name, _ in pkgutil.iter_modules(['./components'])]:
+            print('*** loading package {0}'.format(pkg))
+            component = getattr(module, pkg.title())()
+            print(type(component))
+            component.get_blueprint()
+            app.register_blueprint(component.get_blueprint(), url_prefix='/' + component.get_route_name())
+
+        app.run()

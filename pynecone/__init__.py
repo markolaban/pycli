@@ -14,6 +14,7 @@ from .job import *
 from .mount import *
 from .task import *
 from .topic import *
+from .component import *
 
-__version__ = "0.0.64"
+__version__ = "0.0.65"
 

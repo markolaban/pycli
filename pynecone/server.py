@@ -17,12 +17,9 @@ class Server(ProtoCmd):
 
     def run(self, args):
         print('starting server')
-        module = importlib.import_module('components')
-        for pkg in [pkg_name for _, pkg_name, _ in pkgutil.iter_modules(['./components'])]:
+        module = importlib.import_module('handlers')
+        for pkg in [pkg_name for _, pkg_name, _ in pkgutil.iter_modules(['./handlers'])]:
             print('*** loading package {0}'.format(pkg))
-            component = getattr(module, pkg.title())()
-            print(type(component))
-            component.get_blueprint()
-            app.register_blueprint(component.get_blueprint(), url_prefix='/' + component.get_route_name())
-
+            handler = getattr(module, pkg.title())()
+            app.register_blueprint(handler.get_blueprint(), url_prefix='/' + handler.get_route_name())
         app.run()

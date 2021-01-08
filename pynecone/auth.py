@@ -259,6 +259,10 @@ class Auth:
             data = dump.dump_all(resp)
             print(data.decode('utf-8'))
 
+        if resp.status_code == 401:
+            print('Error: {}'.format(resp.json()['error_description']))
+            return None
+
         return resp.json()['access_token']
 
     def get_auth_token(self):

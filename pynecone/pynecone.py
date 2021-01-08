@@ -11,7 +11,6 @@ from .server import Server
 from .repl import Repl
 from .api import Api
 from .rest import Rest
-from .component import Component
 from .config import Config
 from .test import Test
 

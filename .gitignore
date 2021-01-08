@@ -137,3 +137,4 @@ commands/
 pynecone.yml
 config.yml
 .certs/
+handlers/

@@ -24,13 +24,11 @@ class Pynecone(Shell):
                 Env(),
                 Api(),
                 Broker(),
-                Component('component'),
                 Folder(),
                 Job(),
                 Mount(),
                 Task(),
                 Topic(),
-                Server(),
                 Test(),
                 Repl(),
                 Rest()] + Config.init().list_commands()

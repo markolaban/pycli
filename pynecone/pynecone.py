@@ -7,7 +7,6 @@ from .job import Job
 from .mount import Mount
 from .task import Task
 from .topic import Topic
-from .server import Server
 from .repl import Repl
 from .api import Api
 from .rest import Rest
